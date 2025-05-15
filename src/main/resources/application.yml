@@ -1,0 +1,19 @@
+spring:
+  application:
+  name: crowdfunding
+
+    #configuration for postgreSQL database
+  datasource:
+    url: jdbc:postgresql://localhost:5432/crowdfunding
+    username: ${pgUsername}
+    password: ${pgPassword}
+
+  jpa:
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    show-sql: true
+    properties:
+      hibernate:
+        format-sql: true
+
+    hibernate:
+        ddl-auto: update
