@@ -15,6 +15,7 @@ public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "user_id")
     private Long id;
 
     @Column(nullable = false, unique = true, length = 255)
@@ -23,8 +24,13 @@ public class User {
     @Column(nullable = false, length = 255)
     private String password;
 
-    @Column(length = 100)
+    @Column(length = 100, nullable = false)
     private String name;
+
+    private String city;
+
+    @Column(nullable = false)
+    private String country;
 
     @OneToOne(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private Kyc kyc;

@@ -17,6 +17,7 @@ public class Kyc {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "kyc_id")
     private Long id;
 
     @OneToOne(fetch = FetchType.LAZY, optional = false)
@@ -26,7 +27,7 @@ public class Kyc {
     @Column(name = "document_type", length = 50)
     private String documentType;
 
-    @Column(name = "document_number", length = 100)
+    @Column(name = "document_number", length = 100, unique = true)
     private String documentNumber;
 
     @Column(name = "name_on_document", length = 255)
@@ -38,11 +39,9 @@ public class Kyc {
     @Column(name = "dob_on_document")
     private LocalDate dobOnDocument;
 
-    @Column(name = "email_on_document", length = 255)
-    private String emailOnDocument;
 
-    @Column(name = "phone_on_document", length = 30)
-    private String phoneOnDocument;
+    @Column(name = "contact_no", length = 30, unique = true)
+    private String contactNo;
 
     @Column(name = "document_url", length = 255)
     private String documentUrl;

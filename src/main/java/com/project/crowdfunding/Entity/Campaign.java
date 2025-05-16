@@ -4,7 +4,9 @@ import jakarta.persistence.*;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import com.project.crowdfunding.Enums.CampaignStatus;
 import lombok.AllArgsConstructor;
@@ -20,6 +22,7 @@ public class Campaign {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "campaign_id")
     private Long id;
 
     // Relationship to User
@@ -30,7 +33,7 @@ public class Campaign {
     @Column(nullable = false, length = 255)
     private String title;
 
-    @Column(columnDefinition = "TEXT")
+    @Column(nullable = false)
     private String description;
 
     @Column(name = "goal_amount", nullable = false, precision = 10, scale = 2)
@@ -48,6 +51,23 @@ public class Campaign {
 
     @OneToMany(mappedBy = "campaign", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Comment> comments = new ArrayList<>();
+
+    @ManyToMany
+    @JoinTable(
+        name = "campaign_categories",
+            joinColumns = @JoinColumn(name = "campaign_id"),
+            inverseJoinColumns = @JoinColumn(name = "category_id")
+    )
+    private Set<Category> categories = new HashSet<>();
+
+    @ManyToMany
+    @JoinTable(
+            name = "campaign_tags",
+            joinColumns = @JoinColumn(name = "campaign_id"),
+            inverseJoinColumns = @JoinColumn(name = "tag_id")
+    )
+    private Set<Tag> tags = new HashSet<>();
+
 
 }
 
