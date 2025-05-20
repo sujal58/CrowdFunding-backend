@@ -22,4 +22,17 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
        return new CustomUserDetails(user);
     }
+
+    public UserDetails loadUserByUsernameOrEmail(String input) {
+        User user;
+        if (input.contains("@")) {
+            user = userRepository.findByEmail(input)
+                    .orElseThrow(() -> new UsernameNotFoundException("User not found with email: " + input));
+        } else {
+            user = userRepository.findByUsername(input)
+                    .orElseThrow(() -> new UsernameNotFoundException("User not found with username: " + input));
+        }
+        return new CustomUserDetails(user);
+    }
+
 }

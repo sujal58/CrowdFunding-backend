@@ -54,5 +54,14 @@ public class User {
     @Column(name = "created_at", columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
     private LocalDateTime createdAt = LocalDateTime.now();
 
+    public User(String email, String username, String hashedPassword, String name, String city, String country) {
+        this.email = email;
+        this.username = username;
+        this.password = hashedPassword;
+        this.name = name;
+        this.city = city;
+        this.country = country;
+    }
 }
+
 
