@@ -1,11 +1,12 @@
 package com.project.crowdfunding.Entity;
 
+import com.project.crowdfunding.Enums.NotificationType;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
 import java.time.OffsetDateTime;
-import com.project.crowdfunding.Enums.NotificationType;
 
 @Entity
 @Table(name = "notifications")
@@ -15,7 +16,7 @@ import com.project.crowdfunding.Enums.NotificationType;
 public class Notification {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Long notificationId;
 
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)

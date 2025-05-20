@@ -18,8 +18,8 @@ public class Donation {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "transaction_id")
-    private Long id;
+    @Column(name = "donation_id")
+    private Long donationId;
 
     // Relationship to Campaign
     @ManyToOne(fetch = FetchType.LAZY, optional = false)

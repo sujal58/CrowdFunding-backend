@@ -1,12 +1,14 @@
 package com.project.crowdfunding.Entity;
-import jakarta.persistence.*;
-import java.math.BigDecimal;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
+
 import com.project.crowdfunding.Enums.KycStatus;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "kyc_verifications")
@@ -18,7 +20,7 @@ public class Kyc {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "kyc_id")
-    private Long id;
+    private Long kycId;
 
     @OneToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "user_id", nullable = false, unique = true)

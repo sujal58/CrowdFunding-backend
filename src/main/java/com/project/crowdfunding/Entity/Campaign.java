@@ -1,17 +1,17 @@
 package com.project.crowdfunding.Entity;
 
+import com.project.crowdfunding.Enums.CampaignStatus;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-
-import com.project.crowdfunding.Enums.CampaignStatus;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "campaigns")
@@ -23,7 +23,7 @@ public class Campaign {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "campaign_id")
-    private Long id;
+    private Long campaignId;
 
     // Relationship to User
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
