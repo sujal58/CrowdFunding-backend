@@ -34,8 +34,6 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class AuthService {
 
-
-
     private final UserRepository userRepository;
 
     private final PasswordEncoder passwordEncoder;
@@ -54,7 +52,7 @@ public class AuthService {
 
     @Transactional
     public SignUpResponseDto registerUser(SignUpRequestDto dto){
-        if(userRepository.existsByUserName(dto.getUsername())){
+        if(userRepository.existsByUsername(dto.getUsername())){
             throw new RuntimeException("User having same username already exist");
         }
 
@@ -78,7 +76,6 @@ public class AuthService {
     }
 
     public LoginResponseDto login(LoginRequestDto dto){
-
 
         Optional<User> optionalUser = userRepository.findByUsername(dto.getEmail_username());
 
