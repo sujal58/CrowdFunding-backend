@@ -17,6 +17,9 @@ public class UserResponseDto {
     private Long id;
     private String email;
     private String name;
+    private String username;
+    private String country;
+    private String city;
     private String kycStatus;
     private LocalDateTime createdAt;
 }
