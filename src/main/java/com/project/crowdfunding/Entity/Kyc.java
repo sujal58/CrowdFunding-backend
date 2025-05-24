@@ -1,6 +1,6 @@
 package com.project.crowdfunding.Entity;
 
-import com.project.crowdfunding.Enums.KycStatus;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -11,7 +11,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "kyc_verifications")
+@Table(name = "kyc")
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -22,28 +22,31 @@ public class Kyc {
     @Column(name = "kyc_id")
     private Long kycId;
 
-    @OneToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "user_id", nullable = false, unique = true)
-    private User user;
+    @Column(name = "name", length = 255)
+    private String name;
 
-    @Column(name = "document_type", length = 50)
-    private String documentType;
+    @Column(name = "address")
+    private String address;
+
+    @Column(name = "contact_no", length = 30, unique = true)
+    private String contactNo;
 
     @Column(name = "document_number", length = 100, unique = true)
     private String documentNumber;
 
-    @Column(name = "name_on_document", length = 255)
-    private String nameOnDocument;
+    @Column(name = "document_type", length = 50)
+    private String documentType;
 
-    @Column(name = "address_on_document")
-    private String addressOnDocument;
+    @Column(name = "date_of_birth")
+    private LocalDate dob;
 
-    @Column(name = "dob_on_document")
-    private LocalDate dobOnDocument;
+    //in dto
 
+    @OneToOne(optional = false)
+    @JoinColumn(name = "user_id", nullable = false, unique = true)
+    @JsonManagedReference
+    private User user;
 
-    @Column(name = "contact_no", length = 30, unique = true)
-    private String contactNo;
 
     @Column(name = "document_url", length = 255)
     private String documentUrl;
@@ -54,9 +57,6 @@ public class Kyc {
     @Column(name = "face_match_score", precision = 5, scale = 2)
     private BigDecimal faceMatchScore;
 
-    @Enumerated(EnumType.STRING)
-    @Column(length = 20)
-    private KycStatus status = KycStatus.PENDING;
 
     @Column(name = "reviewed_by", length = 100)
     private String reviewedBy;

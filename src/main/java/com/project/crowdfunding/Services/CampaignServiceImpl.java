@@ -1,11 +1,21 @@
 package com.project.crowdfunding.Services;
 
 import com.project.crowdfunding.Entity.Campaign;
+import com.project.crowdfunding.Entity.User;
+import com.project.crowdfunding.Enums.CampaignStatus;
+import com.project.crowdfunding.Enums.KycStatus;
 import com.project.crowdfunding.Repository.CampaignRepository;
+import com.project.crowdfunding.Repository.UserRepository;
+import com.project.crowdfunding.dto.request.CampaignRequestDto;
+import com.project.crowdfunding.dto.response.CampaignResponseDto;
+import com.project.crowdfunding.utils.AuthHelper;
 import lombok.RequiredArgsConstructor;
+import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
+
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -13,28 +23,67 @@ public class CampaignServiceImpl implements CampaignService {
 
     private final CampaignRepository campaignRepository;
 
+    private final UserRepository userRepository;
+
+    private final ModelMapper modelMapper;
+    
+    private final AuthHelper authHelper;
+
     @Override
-    public Campaign createCampaign(Campaign campaign) {
-        return campaignRepository.save(campaign);
+    public CampaignResponseDto createCampaign(CampaignRequestDto campaignDto) {
+        String username = authHelper.getAuthenticatedUsername();
+
+        User user = userRepository.findByUsername(username).orElseThrow(()-> new RuntimeException("User not found!"));
+
+        if(user.getKycStatus() != KycStatus.VERIFIED){
+            throw new IllegalArgumentException("Verify your kyc to proceed");
+        }
+
+        // Map DTO to Entity
+        Campaign campaign = new Campaign();
+        campaign.setTitle(campaignDto.getTitle());
+        campaign.setDescription(campaignDto.getDescription());
+        campaign.setGoalAmount(campaignDto.getGoalAmount());
+        campaign.setCurrentAmount(BigDecimal.ZERO);
+        campaign.setStatus(CampaignStatus.PENDING);
+        campaign.setUser(user);
+        campaign.setCreatedAt(LocalDateTime.now());
+
+        // Save campaign
+        Campaign savedCampaign = campaignRepository.save(campaign);
+
+        // Map Entity to Response DTO
+        return modelMapper.map(savedCampaign, CampaignResponseDto.class);
     }
 
     @Override
-    public Optional<Campaign> getCampaignById(Long id) {
-        return campaignRepository.findById(id);
+    public CampaignResponseDto getCampaignById(Long id) {
+        Campaign campaign = campaignRepository.findById(id).orElseThrow(() -> new RuntimeException("User not found with id: " + id));
+        return modelMapper.map(campaign, CampaignResponseDto.class);
     }
 
     @Override
-    public List<Campaign> getCampaignsByUserId(Long userId) {
-        return campaignRepository.findByUserUserId(userId);
+    public List<CampaignResponseDto> getCampaignsByUserId(Long userId) {
+        List<Campaign> campaigns = campaignRepository.findByUserUserId(userId);
+        return campaigns.stream().map(campaign -> modelMapper.map(campaign, CampaignResponseDto.class)).toList();
     }
 
     @Override
-    public List<Campaign> getAllCampaigns() {
-        return campaignRepository.findAll();
+    public List<CampaignResponseDto> getAllCampaigns() {
+        List<Campaign> campaigns = campaignRepository.findAll();
+        return campaigns.stream().map(campaign -> modelMapper.map(campaign, CampaignResponseDto.class)).toList();
     }
+
+
+    @Override
+    public List<Campaign> getAllCampaignsOfUser() {
+        User user = authHelper.getAuthenticatedUser();
+        return user.getCampaigns();
+        }
 
     @Override
     public void deleteCampaign(Long id) {
+        Campaign campaign = campaignRepository.findById(id).orElseThrow(() -> new RuntimeException("User not found with id: " + id));
         campaignRepository.deleteById(id);
     }
 }

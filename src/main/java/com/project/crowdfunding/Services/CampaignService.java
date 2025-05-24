@@ -1,15 +1,17 @@
 package com.project.crowdfunding.Services;
 
 import com.project.crowdfunding.Entity.Campaign;
+import com.project.crowdfunding.dto.request.CampaignRequestDto;
+import com.project.crowdfunding.dto.response.CampaignResponseDto;
 
 import java.util.List;
-import java.util.Optional;
 
 public interface CampaignService {
 
-    Campaign createCampaign(Campaign campaign);
-    Optional<Campaign> getCampaignById(Long id);
-    List<Campaign> getCampaignsByUserId(Long userId);
-    List<Campaign> getAllCampaigns();
+    CampaignResponseDto createCampaign(CampaignRequestDto campaign);
+    CampaignResponseDto getCampaignById(Long id);
+    List<CampaignResponseDto> getCampaignsByUserId(Long userId);
+    List<CampaignResponseDto> getAllCampaigns();
+    List<Campaign> getAllCampaignsOfUser();
     void deleteCampaign(Long id);
 }

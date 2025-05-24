@@ -12,8 +12,6 @@ public class ApiResponse {
     private String path;
     private LocalDateTime timestamp;
 
-
-
     // Constructor for successful response with data
     public ApiResponse(String message, Object data, String path) {
         this.message = message;

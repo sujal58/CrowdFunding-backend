@@ -2,32 +2,32 @@ package com.project.crowdfunding.dto.request;
 
 
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import lombok.Data;
+
+import java.time.LocalDate;
 
 @Data
 public class KycRequestDto {
 
-    @NotNull(message = "User ID is required.")
-    private Long userId;
-
     @NotBlank(message = "Full name is required.")
-    private String fullName;
+    private String name;
 
     @NotBlank(message = "Address is required.")
     private String address;
 
     @NotBlank(message = "Phone number is required.")
     @Pattern(regexp = "^\\+?[0-9]{7,15}$", message = "Invalid phone number.")
-    private String phoneNumber;
+    private String contactNo;
 
     @NotBlank(message = "Document number is required.")
     private String documentNumber;
 
-    @NotBlank(message = "Document URL is required.")
-    private String documentUrl;
+    @NotBlank(message = "Type of document is required.")
+    private String documentType;
 
-    @NotBlank(message = "Selfie URL is required.")
-    private String selfieUrl;
+    @NotBlank(message = "DOB similar to document is required.")
+    private LocalDate dob;
+
+
 }

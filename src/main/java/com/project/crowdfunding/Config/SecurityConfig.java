@@ -1,6 +1,7 @@
 package com.project.crowdfunding.Config;
 
 import com.project.crowdfunding.Services.AuthService.UserDetailsServiceImpl;
+import com.project.crowdfunding.utils.AuthEntryPointJwt;
 import com.project.crowdfunding.utils.JwtAuthFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -30,17 +31,26 @@ public class SecurityConfig {
     @Autowired
     private JwtAuthFilter jwtAuthFilter;
 
+    @Autowired
+    private AuthEntryPointJwt authEntryPointJwt;
+
     @Bean
     public SecurityFilterChain customSecurityFilter(HttpSecurity http) throws Exception{
 
         return http
                 .authorizeHttpRequests(request ->
-                        request.anyRequest().permitAll())
+                        request.requestMatchers(Role_Creator).hasAuthority("ROLE_CREATOR")
+                                .requestMatchers("/api/v1/roles","/api/v1/users", "/api/v1/kyc/status/**").hasAuthority("ROLE_ADMIN")
+                                .anyRequest().permitAll()
+                        )
                 .httpBasic(Customizer.withDefaults())
                 .csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authenticationProvider(authenticationProvider())
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
+                .exceptionHandling(ex ->
+                        ex.authenticationEntryPoint(authEntryPointJwt)
+                )
                 .build();
     }
 
@@ -51,4 +61,12 @@ public class SecurityConfig {
         provider.setPasswordEncoder(passwordEncoder);
         return provider;
     }
+
+
+    private String[] Role_Creator =
+            {
+                "/api/v1/campaigns",
+                "/api/v1/campaigns/delete/**",
+                "api/v1/campaigns/total"
+            };
 }

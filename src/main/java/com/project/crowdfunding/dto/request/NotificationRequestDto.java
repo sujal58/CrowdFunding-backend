@@ -13,4 +13,8 @@ public class NotificationRequestDto {
 
     @NotBlank(message = "Notification message cannot be empty.")
     private String message;
+
+    @NotNull(message = "Type of notification must be mentioned!")
+    private String notificationType;
+
 }

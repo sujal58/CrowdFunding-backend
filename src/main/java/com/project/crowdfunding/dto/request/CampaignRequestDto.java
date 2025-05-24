@@ -7,6 +7,7 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 @Data
 public class CampaignRequestDto {
@@ -20,6 +21,9 @@ public class CampaignRequestDto {
     @DecimalMin(value = "1.00", message = "Goal amount must be at least 1.00")
     private BigDecimal goalAmount;
 
-    @NotNull(message = "User ID is required.")
+    private List<String> tags;
+
     private Long userId;
+
+
 }
