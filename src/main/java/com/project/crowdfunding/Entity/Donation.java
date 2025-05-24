@@ -1,5 +1,6 @@
 package com.project.crowdfunding.Entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.project.crowdfunding.Enums.TransactionStatus;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -22,13 +23,14 @@ public class Donation {
     private Long donationId;
 
     // Relationship to Campaign
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @ManyToOne( optional = false, cascade = CascadeType.ALL)
     @JoinColumn(name = "campaign_id", nullable = false)
     private Campaign campaign;
 
     // Relationship to User
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @ManyToOne( optional = false,cascade = CascadeType.ALL)
     @JoinColumn(name = "user_id", nullable = false)
+    @JsonBackReference
     private User user;
 
     @Column(nullable = false, precision = 10, scale = 2)

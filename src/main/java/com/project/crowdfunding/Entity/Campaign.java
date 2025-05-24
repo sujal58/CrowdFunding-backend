@@ -1,5 +1,6 @@
 package com.project.crowdfunding.Entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.project.crowdfunding.Enums.CampaignStatus;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -28,6 +29,7 @@ public class Campaign {
     // Relationship to User
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "user_id", nullable = false)
+    @JsonBackReference
     private User user;
 
     @Column(nullable = false, length = 255)
@@ -50,6 +52,7 @@ public class Campaign {
     private LocalDateTime createdAt = LocalDateTime.now();
 
     @OneToMany(mappedBy = "campaign", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonBackReference
     private List<Comment> comments = new ArrayList<>();
 
     @ManyToMany
@@ -67,7 +70,5 @@ public class Campaign {
             inverseJoinColumns = @JoinColumn(name = "tag_id")
     )
     private Set<Tag> tags = new HashSet<>();
-
-
 }
 

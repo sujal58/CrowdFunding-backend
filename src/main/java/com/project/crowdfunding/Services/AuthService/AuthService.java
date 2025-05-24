@@ -109,7 +109,7 @@ public class AuthService {
     private Set<Role> assignRoles(Set<String> roles) {
         // If no roles are provided, assign the default role: ROLE_USER
         if (roles == null || roles.isEmpty()) {
-            return Set.of(getRole(UserRoles.ROLE_DONOR));
+            return Set.of(getRole(UserRoles.ROLE_USER));
         }
 
         // Convert input strings to corresponding UserRole enums
@@ -123,7 +123,7 @@ public class AuthService {
             } else if("creator".equalsIgnoreCase(roleStr)) {
                 mappedRoles.add(UserRoles.ROLE_CREATOR);
             }else {
-                mappedRoles.add(UserRoles.ROLE_DONOR);
+                mappedRoles.add(UserRoles.ROLE_USER);
             }
         }
 

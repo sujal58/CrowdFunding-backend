@@ -5,7 +5,6 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.math.BigDecimal;
 import java.time.OffsetDateTime;
 
 
@@ -16,14 +15,13 @@ import java.time.OffsetDateTime;
 public class KycResponseDto {
 
     private Long id;
-    private Long userId;
-    private String fullName;
+    private Long user;
+    private String name;
     private String address;
-    private String phoneNumber;
+    private String contactNo;
     private String documentNumber;
     private String documentUrl;
     private String selfieUrl;
     private String status;
-    private BigDecimal confidenceScore;
     private OffsetDateTime createdAt;
 }

@@ -3,9 +3,10 @@ package com.project.crowdfunding.Services;
 import com.project.crowdfunding.Entity.User;
 import com.project.crowdfunding.Repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
+
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -13,19 +14,27 @@ public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
 
+    private final ModelMapper modelMapper;
+
+
     @Override
-    public User createUser(User user) {
+    public User saveUser(User user) {
         return userRepository.save(user);
     }
 
     @Override
-    public Optional<User> getUserById(Long id) {
-        return userRepository.findById(id);
+    public User getUserById(Long id) {
+        return userRepository.findById(id).orElseThrow(()-> new RuntimeException("User not found with id: "+ id));
     }
 
     @Override
-    public Optional<User> getUserByEmail(String email) {
-        return userRepository.findByEmail(email);
+    public User getByUsername(String username) {
+        return userRepository.findByUsername(username).orElseThrow(()-> new RuntimeException("User not found having username: "+ username));
+    }
+
+    @Override
+    public User getUserByEmail(String email) {
+        return userRepository.findByEmail(email).orElseThrow(()-> new RuntimeException("User not found with email: "+ email));
     }
 
     @Override
@@ -35,7 +44,8 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void deleteUser(Long id) {
-        userRepository.deleteById(id);
+        User user = userRepository.findById(id).orElseThrow(()-> new RuntimeException("User not found with id: "+ id));
+        userRepository.delete(user);
     }
 }
 
