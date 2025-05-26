@@ -5,7 +5,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.OffsetDateTime;
+import java.time.LocalDateTime;
 
 
 @Data
@@ -14,14 +14,17 @@ import java.time.OffsetDateTime;
 @AllArgsConstructor
 public class KycResponseDto {
 
-    private Long id;
+    private Long kycId;
     private Long user;
     private String name;
     private String address;
     private String contactNo;
     private String documentNumber;
-    private String documentUrl;
-    private String selfieUrl;
+    private String documentUrlFront;
+    private String documentUrlBack;
+    private String imageUrl;
     private String status;
-    private OffsetDateTime createdAt;
+    private String reviewedBy;
+    private LocalDateTime reviewedAt;
+    private LocalDateTime createdAt;
 }

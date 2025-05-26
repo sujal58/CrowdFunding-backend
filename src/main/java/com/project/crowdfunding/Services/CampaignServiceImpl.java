@@ -9,9 +9,11 @@ import com.project.crowdfunding.Repository.UserRepository;
 import com.project.crowdfunding.dto.request.CampaignRequestDto;
 import com.project.crowdfunding.dto.response.CampaignResponseDto;
 import com.project.crowdfunding.utils.AuthHelper;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -29,8 +31,20 @@ public class CampaignServiceImpl implements CampaignService {
     
     private final AuthHelper authHelper;
 
+    private final FileService fileService;
+
     @Override
-    public CampaignResponseDto createCampaign(CampaignRequestDto campaignDto) {
+    public CampaignResponseDto createCampaign(
+            @Valid CampaignRequestDto campaignDto
+//            MultipartFile[] images
+
+    ) {
+
+
+        for(MultipartFile x: campaignDto.getFile()){
+            System.out.println(x.getOriginalFilename());
+        }
+
         String username = authHelper.getAuthenticatedUsername();
 
         User user = userRepository.findByUsername(username).orElseThrow(()-> new RuntimeException("User not found!"));
@@ -48,6 +62,18 @@ public class CampaignServiceImpl implements CampaignService {
         campaign.setStatus(CampaignStatus.PENDING);
         campaign.setUser(user);
         campaign.setCreatedAt(LocalDateTime.now());
+
+
+
+        for(MultipartFile image: campaignDto.getFile()){
+            String savedImages;
+            if(!image.getContentType().startsWith("/image")){
+                throw new IllegalArgumentException("Supporting document can only have image file!");
+            }
+
+            savedImages = fileService.uploadImage(image, "campaign");
+            campaign.getImages().add(savedImages);
+        }
 
         // Save campaign
         Campaign savedCampaign = campaignRepository.save(campaign);

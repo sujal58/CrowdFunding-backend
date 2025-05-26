@@ -48,11 +48,14 @@ public class Kyc {
     private User user;
 
 
-    @Column(name = "document_url", length = 255)
-    private String documentUrl;
+    @Column(name = "document_url_front", length = 255)
+    private String documentUrlFront;
+
+    @Column(name = "document_url_back", length = 255)
+    private String documentUrlBack;
 
     @Column(name = "selfie_url", length = 255)
-    private String selfieUrl;
+    private String imageUrl;
 
     @Column(name = "face_match_score", precision = 5, scale = 2)
     private BigDecimal faceMatchScore;
