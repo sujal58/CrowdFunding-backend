@@ -55,6 +55,9 @@ public class Campaign {
     @JsonBackReference
     private List<Comment> comments = new ArrayList<>();
 
+
+    private List<String> images = new ArrayList<>();
+
     @ManyToMany
     @JoinTable(
         name = "campaign_categories",

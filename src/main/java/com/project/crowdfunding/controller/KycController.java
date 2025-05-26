@@ -5,9 +5,11 @@ import com.project.crowdfunding.Services.KycService;
 import com.project.crowdfunding.dto.request.KycRequestDto;
 import com.project.crowdfunding.dto.response.ApiResponse;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequestMapping("/api/v1/kyc")
@@ -19,11 +21,16 @@ public class KycController {
     private final HttpServletRequest servletRequest;
 
     @PostMapping
-    public ResponseEntity<ApiResponse> createKyc(@RequestBody KycRequestDto request) {
+    public ResponseEntity<ApiResponse> createKyc(
+            @Valid @ModelAttribute KycRequestDto request,
+            @RequestParam("frontDoc") MultipartFile frontDoc,
+            @RequestParam("backDoc")MultipartFile backDoc,
+            @RequestParam("image")MultipartFile image
+    ) {
         return ResponseEntity.ok(
                 ApiResponse.success(
                         "KYC submitted successfully!",
-                        kycService.submitVerification(request),
+                        kycService.submitVerification(request, frontDoc, backDoc, image),
                         servletRequest.getRequestURI()
                 )
         );

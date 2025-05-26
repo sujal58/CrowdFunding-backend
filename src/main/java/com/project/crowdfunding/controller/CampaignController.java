@@ -4,9 +4,11 @@ import com.project.crowdfunding.Services.CampaignService;
 import com.project.crowdfunding.dto.request.CampaignRequestDto;
 import com.project.crowdfunding.dto.response.ApiResponse;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequestMapping("/api/v1/campaigns")
@@ -18,7 +20,10 @@ public class CampaignController {
     private final HttpServletRequest servletRequest;
 
     @PostMapping
-    public ResponseEntity<ApiResponse> createCampaign(@RequestBody CampaignRequestDto request) {
+    public ResponseEntity<ApiResponse> createCampaign(
+            @Valid @ModelAttribute CampaignRequestDto request
+//            @RequestParam(value="file", required = false) MultipartFile[] images
+            ) {
         return ResponseEntity.ok(
                 ApiResponse.success(
                         "Campaign created successfully!",
