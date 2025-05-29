@@ -3,6 +3,7 @@ package com.project.crowdfunding.Services;
 import com.project.crowdfunding.Entity.Notification;
 import com.project.crowdfunding.Entity.User;
 import com.project.crowdfunding.Enums.NotificationType;
+import com.project.crowdfunding.Exception.ResourceNotFoundException;
 import com.project.crowdfunding.Repository.NotificationRepository;
 import com.project.crowdfunding.dto.request.NotificationRequestDto;
 import com.project.crowdfunding.utils.AuthHelper;
@@ -55,12 +56,12 @@ public class NotificationServiceImpl implements NotificationService {
 
     @Override
     public Notification getNotificationById(Long id) {
-        return notificationRepository.findById(id).orElseThrow(()-> new RuntimeException("Notification not found!"));
+        return notificationRepository.findById(id).orElseThrow(()-> new ResourceNotFoundException("Notification not found!"));
     }
 
     @Override
     public void deleteNotificationById(Long id) {
-        Notification notification = notificationRepository.findById(id).orElseThrow(()-> new RuntimeException("Notification not found!"));
+        Notification notification = notificationRepository.findById(id).orElseThrow(()-> new ResourceNotFoundException("Notification not found!"));
         notificationRepository.delete(notification);
     }
 }

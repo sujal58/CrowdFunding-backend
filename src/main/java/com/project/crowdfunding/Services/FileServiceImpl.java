@@ -1,5 +1,6 @@
 package com.project.crowdfunding.Services;
 
+import com.project.crowdfunding.Exception.ApiException;
 import com.project.crowdfunding.utils.AuthHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -26,8 +27,8 @@ public class FileServiceImpl implements FileService{
     @Override
     public String uploadImage (MultipartFile file, String fileType) {
         String username = authHelper.getAuthenticatedUsername();
-        if(!Set.of("docFront", "docBack", "image").contains(fileType)){
-            throw new IllegalArgumentException("Incorrect file type: "+fileType);
+        if(!Set.of("docFront", "docBack", "image", "campaign").contains(fileType)){
+            throw new IllegalArgumentException("Incorrect file type: "+ fileType);
         }
 
         try{
@@ -50,7 +51,7 @@ public class FileServiceImpl implements FileService{
 
             return filePath.toString();
         }catch (Exception e){
-            throw new RuntimeException("Error while uploading file: ", e);
+            throw new ApiException("Error while uploading file: "+ e);
         }
     }
 
@@ -63,7 +64,7 @@ public class FileServiceImpl implements FileService{
 
         if(file.exists() && file.isFile()){
             if(!file.delete()){
-                throw new RuntimeException("Error while deleting notice image!");
+                throw new ApiException("Error while deleting notice image!");
             }
         }
 

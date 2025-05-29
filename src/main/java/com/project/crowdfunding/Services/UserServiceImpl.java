@@ -1,6 +1,7 @@
 package com.project.crowdfunding.Services;
 
 import com.project.crowdfunding.Entity.User;
+import com.project.crowdfunding.Exception.ResourceNotFoundException;
 import com.project.crowdfunding.Repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
@@ -24,17 +25,17 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User getUserById(Long id) {
-        return userRepository.findById(id).orElseThrow(()-> new RuntimeException("User not found with id: "+ id));
+        return userRepository.findById(id).orElseThrow(()-> new ResourceNotFoundException("User not found with id: "+ id));
     }
 
     @Override
     public User getByUsername(String username) {
-        return userRepository.findByUsername(username).orElseThrow(()-> new RuntimeException("User not found having username: "+ username));
+        return userRepository.findByUsername(username).orElseThrow(()-> new ResourceNotFoundException("User not found having username: "+ username));
     }
 
     @Override
     public User getUserByEmail(String email) {
-        return userRepository.findByEmail(email).orElseThrow(()-> new RuntimeException("User not found with email: "+ email));
+        return userRepository.findByEmail(email).orElseThrow(()-> new ResourceNotFoundException("User not found with email: "+ email));
     }
 
     @Override
@@ -44,7 +45,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void deleteUser(Long id) {
-        User user = userRepository.findById(id).orElseThrow(()-> new RuntimeException("User not found with id: "+ id));
+        User user = userRepository.findById(id).orElseThrow(()-> new ResourceNotFoundException("User not found with id: "+ id));
         userRepository.delete(user);
     }
 }

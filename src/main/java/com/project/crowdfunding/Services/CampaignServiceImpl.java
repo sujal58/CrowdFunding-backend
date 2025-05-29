@@ -3,7 +3,8 @@ package com.project.crowdfunding.Services;
 import com.project.crowdfunding.Entity.Campaign;
 import com.project.crowdfunding.Entity.User;
 import com.project.crowdfunding.Enums.CampaignStatus;
-import com.project.crowdfunding.Enums.KycStatus;
+import com.project.crowdfunding.Exception.KycNotVerifiedException;
+import com.project.crowdfunding.Exception.ResourceNotFoundException;
 import com.project.crowdfunding.Repository.CampaignRepository;
 import com.project.crowdfunding.Repository.UserRepository;
 import com.project.crowdfunding.dto.request.CampaignRequestDto;
@@ -36,21 +37,14 @@ public class CampaignServiceImpl implements CampaignService {
     @Override
     public CampaignResponseDto createCampaign(
             @Valid CampaignRequestDto campaignDto
-//            MultipartFile[] images
-
     ) {
-
-
-        for(MultipartFile x: campaignDto.getFile()){
-            System.out.println(x.getOriginalFilename());
-        }
 
         String username = authHelper.getAuthenticatedUsername();
 
-        User user = userRepository.findByUsername(username).orElseThrow(()-> new RuntimeException("User not found!"));
+        User user = userRepository.findByUsername(username).orElseThrow(()-> new ResourceNotFoundException("User not found!"));
 
-        if(user.getKycStatus() != KycStatus.VERIFIED){
-            throw new IllegalArgumentException("Verify your kyc to proceed");
+        if(!user.isVerified()){
+            throw new KycNotVerifiedException("User must complete KYC to access this resource.");
         }
 
         // Map DTO to Entity
@@ -63,17 +57,16 @@ public class CampaignServiceImpl implements CampaignService {
         campaign.setUser(user);
         campaign.setCreatedAt(LocalDateTime.now());
 
-
-
-        for(MultipartFile image: campaignDto.getFile()){
+        for (MultipartFile image : campaignDto.getFile()) {
             String savedImages;
-            if(!image.getContentType().startsWith("/image")){
+            if (!image.getContentType().startsWith("image/")) {
                 throw new IllegalArgumentException("Supporting document can only have image file!");
             }
 
             savedImages = fileService.uploadImage(image, "campaign");
             campaign.getImages().add(savedImages);
         }
+
 
         // Save campaign
         Campaign savedCampaign = campaignRepository.save(campaign);
@@ -84,7 +77,7 @@ public class CampaignServiceImpl implements CampaignService {
 
     @Override
     public CampaignResponseDto getCampaignById(Long id) {
-        Campaign campaign = campaignRepository.findById(id).orElseThrow(() -> new RuntimeException("User not found with id: " + id));
+        Campaign campaign = campaignRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("User not found with id: " + id));
         return modelMapper.map(campaign, CampaignResponseDto.class);
     }
 
@@ -109,7 +102,7 @@ public class CampaignServiceImpl implements CampaignService {
 
     @Override
     public void deleteCampaign(Long id) {
-        Campaign campaign = campaignRepository.findById(id).orElseThrow(() -> new RuntimeException("User not found with id: " + id));
+        Campaign campaign = campaignRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("User not found with id: " + id));
         campaignRepository.deleteById(id);
     }
 }

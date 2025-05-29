@@ -51,6 +51,18 @@ public class UserController {
         );
     }
 
+
+    @GetMapping("/details")
+    public ResponseEntity<ApiResponse> getAllUserDetails() {
+        return ResponseEntity.ok(
+                ApiResponse.success(
+                        "All users fetched successfully!",
+                        userService.getAllUsers(),
+                        servletRequest.getRequestURI()
+                )
+        );
+    }
+
     @DeleteMapping("/{id}")
     public ResponseEntity<ApiResponse> deleteUser(@PathVariable Long id) {
         userService.deleteUser(id);

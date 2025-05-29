@@ -1,5 +1,6 @@
 package com.project.crowdfunding.Config;
 
+import com.project.crowdfunding.Exception.CustomAccessDeniedHandler;
 import com.project.crowdfunding.Services.AuthService.UserDetailsServiceImpl;
 import com.project.crowdfunding.utils.AuthEntryPointJwt;
 import com.project.crowdfunding.utils.JwtAuthFilter;
@@ -24,15 +25,14 @@ public class SecurityConfig {
 
     @Autowired
     private UserDetailsServiceImpl userDetailsServiceImpl;
-
     @Autowired
     private PasswordEncoder passwordEncoder;
-
     @Autowired
     private JwtAuthFilter jwtAuthFilter;
-
     @Autowired
     private AuthEntryPointJwt authEntryPointJwt;
+    @Autowired
+    private CustomAccessDeniedHandler accessDeniedHandler;
 
     @Bean
     public SecurityFilterChain customSecurityFilter(HttpSecurity http) throws Exception{
@@ -41,6 +41,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(request ->
                         request.requestMatchers(Role_Creator).hasAuthority("ROLE_CREATOR")
                                 .requestMatchers("/api/v1/roles","/api/v1/users", "/api/v1/kyc/status/**").hasAuthority("ROLE_ADMIN")
+                                .requestMatchers("api/v1/kyc/submit").authenticated()
                                 .anyRequest().permitAll()
                         )
                 .httpBasic(Customizer.withDefaults())
@@ -49,7 +50,10 @@ public class SecurityConfig {
                 .authenticationProvider(authenticationProvider())
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
                 .exceptionHandling(ex ->
-                        ex.authenticationEntryPoint(authEntryPointJwt)
+                        ex
+                                .authenticationEntryPoint(authEntryPointJwt)
+                                .accessDeniedHandler(accessDeniedHandler)
+
                 )
                 .build();
     }
