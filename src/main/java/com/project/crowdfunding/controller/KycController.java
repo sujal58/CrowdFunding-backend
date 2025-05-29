@@ -20,7 +20,7 @@ public class KycController {
 
     private final HttpServletRequest servletRequest;
 
-    @PostMapping
+    @PostMapping("/submit")
     public ResponseEntity<ApiResponse> createKyc(
             @Valid @ModelAttribute KycRequestDto request,
             @RequestParam("frontDoc") MultipartFile frontDoc,

@@ -1,6 +1,9 @@
 package com.project.crowdfunding.utils;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.project.crowdfunding.dto.response.ApiResponse;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -10,8 +13,6 @@ import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
 
 @Component
 public class AuthEntryPointJwt implements AuthenticationEntryPoint {
@@ -20,15 +21,15 @@ public class AuthEntryPointJwt implements AuthenticationEntryPoint {
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
 
-        final Map<String, Object> body = new HashMap<>();
 
-        body.put("Status", HttpServletResponse.SC_UNAUTHORIZED);
-        body.put("Error", "Unauthorized");
-        body.put("Message", authException.getMessage());
-        body.put("Path", request.getServletPath());
+        ApiResponse apiResponse = new ApiResponse("Please log in!", authException.getMessage(), request.getRequestURI());
 
         final ObjectMapper mapper = new ObjectMapper();
+        mapper.registerModule(new JavaTimeModule());
+        mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
 
-        mapper.writeValue(response.getOutputStream(), body);
+
+
+        mapper.writeValue(response.getOutputStream(), apiResponse);
     }
 }

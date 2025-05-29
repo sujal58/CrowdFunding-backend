@@ -20,7 +20,7 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     public Category createCategory(CategoryRequestDto dto) {
         if(dto == null){
-            throw new RuntimeException("Category cannot be empty!");
+            throw new IllegalArgumentException("Category cannot be empty!");
         }
         Category category = modelMapper.map(dto, Category.class);
         return categoryRepository.save(category);
@@ -33,7 +33,7 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     public void deleteCategoryById(Long id) {
-        Category category = categoryRepository.findById(id).orElseThrow(()-> new RuntimeException("Category not found with id: "+ id));
+        Category category = categoryRepository.findById(id).orElseThrow(()-> new IllegalArgumentException("Category not found with id: "+ id));
         categoryRepository.delete(category);
     }
 }

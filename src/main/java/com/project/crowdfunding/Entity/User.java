@@ -75,6 +75,10 @@ public class User {
         this.city = city;
         this.country = country;
     }
+
+    public boolean isVerified(){
+        return getKycStatus() == KycStatus.VERIFIED;
+    }
 }
 
 

@@ -67,7 +67,7 @@ public class DonationServiceImpl implements DonationService {
 
     @Override
     public Donation getByDonationId(Long id) {
-        return donationRepository.findByDonationId(id).orElseThrow(()-> new RuntimeException("Donation not found with id: "+ id));
+        return donationRepository.findByDonationId(id).orElseThrow(()-> new IllegalArgumentException("Donation not found with id: "+ id));
     }
 
     @Override

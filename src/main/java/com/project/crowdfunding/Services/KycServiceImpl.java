@@ -1,7 +1,9 @@
 package com.project.crowdfunding.Services;
 
+import com.project.crowdfunding.Entity.Campaign;
 import com.project.crowdfunding.Entity.Kyc;
 import com.project.crowdfunding.Entity.User;
+import com.project.crowdfunding.Enums.CampaignStatus;
 import com.project.crowdfunding.Enums.KycStatus;
 import com.project.crowdfunding.Repository.KycRepository;
 import com.project.crowdfunding.dto.request.KycRequestDto;
@@ -15,6 +17,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -39,6 +42,14 @@ public class KycServiceImpl implements KycService {
             MultipartFile image
     ) {
 
+        User user = authHelper.getAuthenticatedUser();
+
+        Optional<Kyc> Optionalkyc = kycRepository.findByUserUserId(user.getUserId());
+
+        if(Optionalkyc.isPresent()){
+            throw new IllegalArgumentException("Kyc already exist! Please update if you want any change!");
+        }
+
         if(frontDoc.isEmpty() || backDoc.isEmpty() || image.isEmpty()){
             throw new IllegalArgumentException("Images are required!");
         }
@@ -47,8 +58,7 @@ public class KycServiceImpl implements KycService {
             throw new IllegalArgumentException("Only image files are allowed");
         }
 
-        String username = authHelper.getAuthenticatedUsername();
-        User user = userService.getByUsername(username);
+
         String frontDocPath = fileService.uploadImage(frontDoc, "docFront");
         String backDocPath = fileService.uploadImage(backDoc, "docBack");
         String imagePath = fileService.uploadImage(image, "image");
@@ -78,7 +88,7 @@ public class KycServiceImpl implements KycService {
 
     @Override
     public Kyc getByUserId(Long userId) {
-        return kycRepository.findByUserUserId(userId).orElseThrow(()-> new RuntimeException("No kyc found of user id: "+ userId));
+        return kycRepository.findByUserUserId(userId).orElseThrow(()-> new IllegalArgumentException("No kyc found of user id: "+ userId));
     }
 
     @Transactional
@@ -87,7 +97,7 @@ public class KycServiceImpl implements KycService {
        User user = userService.getUserById(userId);
        String admin = authHelper.getAuthenticatedUsername();
        if(user.getKyc() == null){
-           throw new RuntimeException("No kyc found of user: "+ user.getUsername());
+           throw new IllegalArgumentException("No kyc found of user: "+ user.getUsername());
        }
        user.setKycStatus(KycStatus.fromString(status));
        user.getKyc().setReviewedBy(admin);
@@ -101,12 +111,22 @@ public class KycServiceImpl implements KycService {
     public void deleteKycByUserId(Long userId) {
         User user = userService.getUserById(userId);
         if(user.getKyc() == null){
-            throw new RuntimeException("No kyc found of user: "+ user.getUsername());
+            throw new IllegalArgumentException("No kyc found of user: "+ user.getUsername());
         }
         Kyc kyc = user.getKyc();
         kycRepository.delete(kyc);
+
+        fileService.deleteImage(kyc.getImageUrl());
+        fileService.deleteImage(kyc.getDocumentUrlBack());
+        fileService.deleteImage(kyc.getDocumentUrlFront());
+
         user.setKyc(null);
         user.setKycStatus(KycStatus.PENDING);
+        for(Campaign campaign: user.getCampaigns()){
+            if(campaign.getStatus().equals(CampaignStatus.ACTIVE)){
+                campaign.setStatus(CampaignStatus.PENDING);
+            }
+        }
         userService.saveUser(user);
     }
 
