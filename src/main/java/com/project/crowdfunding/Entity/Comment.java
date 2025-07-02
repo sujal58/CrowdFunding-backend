@@ -1,8 +1,10 @@
 package com.project.crowdfunding.Entity;
 
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 import java.time.OffsetDateTime;
 
 @Entity
@@ -19,12 +21,12 @@ public class Comment {
 
     @ManyToOne(fetch = FetchType.EAGER, optional = false)
     @JoinColumn(name = "user_id", nullable = false)
-    @JsonManagedReference
+//    @JsonManagedReference
     private User user;
 
     @ManyToOne(fetch = FetchType.EAGER, optional = false)
     @JoinColumn(name = "campaign_id", nullable = false)
-    @JsonManagedReference
+//    @JsonManagedReference
     private Campaign campaign;
 
     @Column(nullable = false, length = 500)

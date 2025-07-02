@@ -3,6 +3,7 @@ package com.project.crowdfunding.Services.AuthService;
 import com.project.crowdfunding.Entity.Role;
 import com.project.crowdfunding.Entity.User;
 import com.project.crowdfunding.Enums.UserRoles;
+import com.project.crowdfunding.Exception.ApiException;
 import com.project.crowdfunding.Repository.RoleRepository;
 import com.project.crowdfunding.Repository.UserRepository;
 import com.project.crowdfunding.dto.request.LoginRequestDto;
@@ -53,11 +54,11 @@ public class AuthService {
     @Transactional
     public SignUpResponseDto registerUser(SignUpRequestDto dto){
         if(userRepository.existsByUsername(dto.getUsername())){
-            throw new RuntimeException("User having same username already exist");
+            throw new ApiException("User having same username already exist");
         }
 
         if(userRepository.existsByEmail(dto.getEmail())){
-            throw new RuntimeException("User having same Email already exist");
+            throw new ApiException("User having same Email already exist");
         }
 
         // Hash the password before constructing the User
@@ -96,11 +97,11 @@ public class AuthService {
             String JwtToken = jwtService.GenerateToken(userDetails.getUsername());
 
             List<String> roles = userDetails.getAuthorities().stream().map(GrantedAuthority::getAuthority).toList();
-            return new LoginResponseDto(userDetails.getUsername(), JwtToken, roles);
+            return new LoginResponseDto(userDetails.getUsername(), JwtToken, roles, user.getKycStatus().toString());
         }catch (BadCredentialsException e){
             throw new BadCredentialsException("Invalid username and password!");
         }catch (Exception e){
-            throw new RuntimeException("Exception while login: "+ e.getMessage());
+            throw new ApiException("Exception while login: "+ e.getMessage());
         }
 
     }

@@ -15,22 +15,22 @@ import java.util.Set;
 @NoArgsConstructor
 public class SignUpRequestDto {
 
-    @NotBlank(message = "Email is required.")
-    @Email(message = "Please provide a valid email address.")
-    @Size(max = 255, message = "Email must not exceed 255 characters.")
-    private String email;
+    @NotBlank(message = "Name is required.")
+    @Size(max = 100, message = "Name must not exceed 100 characters.")
+    private String name;
 
     @NotBlank(message = "Username is required.")
     @Size(max = 255, message = "Username must not exceed 255 characters.")
     private String username;
 
+    @NotBlank(message = "Email is required.")
+    @Email(message = "Please provide a valid email address.")
+    @Size(max = 255, message = "Email must not exceed 255 characters.")
+    private String email;
+
     @NotBlank(message = "Password is required.")
     @Size(min = 8, max = 255, message = "Password must be between 8 and 255 characters.")
     private String password;
-
-    @NotBlank(message = "Name is required.")
-    @Size(max = 100, message = "Name must not exceed 100 characters.")
-    private String name;
 
     private String city;
 

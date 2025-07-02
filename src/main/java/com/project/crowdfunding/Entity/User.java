@@ -38,9 +38,10 @@ public class User {
     @Column(length = 100, nullable = false)
     private String name;
 
+    @Column(nullable = true)
     private String city;
 
-    @Column(nullable = false)
+    @Column(nullable = true)
     private String country;
 
     @OneToOne(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL)

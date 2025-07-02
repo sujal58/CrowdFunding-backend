@@ -58,13 +58,12 @@ public class KycServiceImpl implements KycService {
             throw new IllegalArgumentException("Only image files are allowed");
         }
 
+        Kyc kyc = modelMapper.map(kycDto, Kyc.class);
+        kyc.setUser(user);
 
         String frontDocPath = fileService.uploadImage(frontDoc, "docFront");
         String backDocPath = fileService.uploadImage(backDoc, "docBack");
         String imagePath = fileService.uploadImage(image, "image");
-
-        Kyc kyc = modelMapper.map(kycDto, Kyc.class);
-        kyc.setUser(user);
         kyc.setDocumentUrlFront(frontDocPath);
         kyc.setDocumentUrlBack(backDocPath);
         kyc.setImageUrl(imagePath);

@@ -34,6 +34,13 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public String getKycStatusByUsername(String username) {
+        User user = userRepository.findByUsername(username).orElseThrow(()-> new ResourceNotFoundException("User not found with username: "+ username));
+        return user.getKycStatus().toString();
+
+    }
+
+    @Override
     public User getUserByEmail(String email) {
         return userRepository.findByEmail(email).orElseThrow(()-> new ResourceNotFoundException("User not found with email: "+ email));
     }

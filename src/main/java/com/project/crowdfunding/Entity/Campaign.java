@@ -52,11 +52,14 @@ public class Campaign {
     private LocalDateTime createdAt = LocalDateTime.now();
 
     @OneToMany(mappedBy = "campaign", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonBackReference
+//    @JsonBackReference
     private List<Comment> comments = new ArrayList<>();
 
+    @Column(name = "campaign_image", nullable = false)
+    private String campaignImage;
 
-    private List<String> images = new ArrayList<>();
+    @Column(name = "supporting_images")
+    private List<String> supportingImages = new ArrayList<>();
 
     @ManyToMany
     @JoinTable(

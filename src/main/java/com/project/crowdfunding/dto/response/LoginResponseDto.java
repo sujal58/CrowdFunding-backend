@@ -15,4 +15,6 @@ public class LoginResponseDto {
 
     private List<String> roles;
 
+    private String status;
+
 }
