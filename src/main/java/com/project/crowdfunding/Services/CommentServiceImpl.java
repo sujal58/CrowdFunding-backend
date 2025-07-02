@@ -47,7 +47,11 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     public List<Comment> getCommentsByCampaignId(Long campaignId) {
-        return commentRepository.findByCampaignCampaignId(campaignId);
+        List<Comment> comments = commentRepository.findByCampaignCampaignId(campaignId);
+        if(!comments.isEmpty()){
+            System.out.println("comments exist");
+        }
+        return comments;
     }
 
     @Override

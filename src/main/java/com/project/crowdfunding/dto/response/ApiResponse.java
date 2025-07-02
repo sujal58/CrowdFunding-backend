@@ -39,7 +39,6 @@ public class ApiResponse {
         return new ApiResponse(message, data, path);
     }
 
-
     // Static helper method for a successful response without data
     public static ApiResponse success(String message) {
         return new ApiResponse( message);
@@ -48,6 +47,11 @@ public class ApiResponse {
     // Static helper method for an error response
     public static ApiResponse error(String message, String error, String path) {
         return new ApiResponse(message, error, path);
+    }
+
+    // Static helper method for an error response with data
+    public static ApiResponse error(String message, Object data, String path) {
+        return new ApiResponse(message, data, path);
     }
 
 }

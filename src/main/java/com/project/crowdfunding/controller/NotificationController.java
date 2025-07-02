@@ -9,7 +9,10 @@ import com.project.crowdfunding.dto.request.NotificationRequestDto;
 import com.project.crowdfunding.dto.response.ApiResponse;
 import com.project.crowdfunding.dto.response.NotificationResponseDto;
 import com.project.crowdfunding.utils.AuthHelper;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.ResponseEntity;
@@ -22,20 +25,21 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping("/api/v1/notifications")
 @RequiredArgsConstructor
+@Tag(name = "Notifications", description = "Endpoints to send, fetch, update, and delete user notifications")
 public class NotificationController {
 
     private final NotificationServiceImpl notificationService;
-
     private final UserService userService;
-
     private final ModelMapper modelMapper;
-
     private final HttpServletRequest servletRequest;
-
     private final AuthHelper authHelper;
 
+    @Operation(
+            summary = "Send Notification",
+            description = "Sends a notification based on the provided details in the request body."
+    )
     @PostMapping
-    public ResponseEntity<ApiResponse> create(@RequestBody NotificationRequestDto request) {
+    public ResponseEntity<ApiResponse> create(@Valid @RequestBody NotificationRequestDto request) {
         String username = authHelper.getAuthenticatedUsername();
         User user = userService.getByUsername(username);
         return ResponseEntity.ok(
@@ -47,9 +51,12 @@ public class NotificationController {
         );
     }
 
+    @Operation(
+            summary = "Get All Notifications",
+            description = "Retrieves all notifications from the system. Usually for administrative purposes."
+    )
     @GetMapping
     public ResponseEntity<ApiResponse> getAllNotifications() {
-
         List<Notification> notifications = notificationService.getAllNotifications();
         List<NotificationResponseDto> response = notifications.stream()
                 .map(n -> modelMapper.map(n, NotificationResponseDto.class))
@@ -63,6 +70,10 @@ public class NotificationController {
         );
     }
 
+    @Operation(
+            summary = "Get Notifications for Current User",
+            description = "Fetches all notifications that belong to the currently authenticated user."
+    )
     @GetMapping("/user")
     public ResponseEntity<ApiResponse> getAllNotificationsByUser() {
         String username = authHelper.getAuthenticatedUsername();
@@ -80,6 +91,10 @@ public class NotificationController {
         );
     }
 
+    @Operation(
+            summary = "Get Unread Notifications for Current User",
+            description = "Retrieves unread notifications for the currently authenticated user."
+    )
     @GetMapping("/unread")
     public ResponseEntity<ApiResponse> getUnreadNotifications() {
         String username = authHelper.getAuthenticatedUsername();
@@ -94,8 +109,13 @@ public class NotificationController {
                         response,
                         servletRequest.getRequestURI()
                 )
-        );    }
+        );
+    }
 
+    @Operation(
+            summary = "Get Notification by ID",
+            description = "Fetches a specific notification by its unique ID."
+    )
     @GetMapping("/{id}")
     public ResponseEntity<ApiResponse> getNotificationById(@PathVariable Long id) {
         Notification notification = notificationService.getNotificationById(id);
@@ -109,6 +129,10 @@ public class NotificationController {
         );
     }
 
+    @Operation(
+            summary = "Delete Notification",
+            description = "Deletes a notification by its ID."
+    )
     @DeleteMapping("/{id}")
     public ResponseEntity<ApiResponse> deleteNotification(@PathVariable Long id) {
         notificationService.deleteNotificationById(id);
@@ -119,9 +143,14 @@ public class NotificationController {
         );
     }
 
+//    @Operation(
+//        summary = "Update Notification",
+//        description = "Updates an existing notification by ID with new details."
+//    )
 //    @PutMapping("/{id}")
-//    public ResponseEntity<NotificationResponseDto> updateNotification(@PathVariable Long id,
-//                                                                      @Valid @RequestBody NotificationRequestDto dto) {
+//    public ResponseEntity<NotificationResponseDto> updateNotification(
+//            @PathVariable Long id,
+//            @Valid @RequestBody NotificationRequestDto dto) {
 //        Notification updated = notificationService.updateNotification(id, dto);
 //        return ResponseEntity.ok(modelMapper.map(updated, NotificationResponseDto.class));
 //    }

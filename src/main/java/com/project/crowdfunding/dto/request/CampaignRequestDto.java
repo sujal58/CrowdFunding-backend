@@ -16,6 +16,7 @@ public class CampaignRequestDto {
     @NotBlank(message = "Campaign title is required.")
     private String title;
 
+    @NotBlank(message = "Campaign description is required.")
     private String description;
 
     @NotNull(message = "Goal amount is required.")
@@ -24,7 +25,10 @@ public class CampaignRequestDto {
 
     private List<String> tags;
 
-    private MultipartFile[] file;
+    @NotNull(message = "Campaign image is required!")
+    private MultipartFile campaignImage;
+
+    private MultipartFile[] supportingImages;
 
     private Long userId;
 }

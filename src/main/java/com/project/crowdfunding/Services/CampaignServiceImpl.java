@@ -22,88 +22,91 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class CampaignServiceImpl implements CampaignService {
+public class CampaignServiceImpl implements CampaignService{
 
-    private final CampaignRepository campaignRepository;
+        private final CampaignRepository campaignRepository;
 
-    private final UserRepository userRepository;
+        private final UserRepository userRepository;
 
-    private final ModelMapper modelMapper;
-    
-    private final AuthHelper authHelper;
+        private final ModelMapper modelMapper;
 
-    private final FileService fileService;
+        private final AuthHelper authHelper;
 
-    @Override
-    public CampaignResponseDto createCampaign(
-            @Valid CampaignRequestDto campaignDto
-    ) {
+        private final FileService fileService;
 
-        String username = authHelper.getAuthenticatedUsername();
+        @Override
+        public CampaignResponseDto createCampaign(
+                @Valid CampaignRequestDto campaignDto
+        ) {
 
-        User user = userRepository.findByUsername(username).orElseThrow(()-> new ResourceNotFoundException("User not found!"));
+            String username = authHelper.getAuthenticatedUsername();
 
-        if(!user.isVerified()){
-            throw new KycNotVerifiedException("User must complete KYC to access this resource.");
-        }
+            User user = userRepository.findByUsername(username).orElseThrow(()-> new ResourceNotFoundException("User not found!"));
 
-        // Map DTO to Entity
-        Campaign campaign = new Campaign();
-        campaign.setTitle(campaignDto.getTitle());
-        campaign.setDescription(campaignDto.getDescription());
-        campaign.setGoalAmount(campaignDto.getGoalAmount());
-        campaign.setCurrentAmount(BigDecimal.ZERO);
-        campaign.setStatus(CampaignStatus.PENDING);
-        campaign.setUser(user);
-        campaign.setCreatedAt(LocalDateTime.now());
-
-        for (MultipartFile image : campaignDto.getFile()) {
-            String savedImages;
-            if (!image.getContentType().startsWith("image/")) {
-                throw new IllegalArgumentException("Supporting document can only have image file!");
+            if(!user.isVerified()){
+                throw new KycNotVerifiedException("User must complete KYC to access this resource.");
             }
 
-            savedImages = fileService.uploadImage(image, "campaign");
-            campaign.getImages().add(savedImages);
+            // Map DTO to Entity
+            Campaign campaign = new Campaign();
+            campaign.setTitle(campaignDto.getTitle());
+            campaign.setDescription(campaignDto.getDescription());
+            campaign.setGoalAmount(campaignDto.getGoalAmount());
+            campaign.setCurrentAmount(BigDecimal.ZERO);
+            campaign.setStatus(CampaignStatus.PENDING);
+            campaign.setUser(user);
+            campaign.setCreatedAt(LocalDateTime.now());
+
+            for (MultipartFile image : campaignDto.getSupportingImages()) {
+                String savedImages;
+                if (!image.getContentType().startsWith("image/")) {
+                    throw new IllegalArgumentException("Supporting document can only have image file!");
+                }
+
+                savedImages = fileService.uploadImage(image, "campaign");
+                campaign.getSupportingImages().add(savedImages);
+            }
+
+            String savedCampaignImages = fileService.uploadImage(campaignDto.getCampaignImage(), "campaign");
+            campaign.setCampaignImage(savedCampaignImages);
+
+
+            // Save campaign
+            Campaign savedCampaign = campaignRepository.save(campaign);
+
+            // Map Entity to Response DTO
+            return modelMapper.map(savedCampaign, CampaignResponseDto.class);
+        }
+
+        @Override
+        public CampaignResponseDto getCampaignById(Long id) {
+            Campaign campaign = campaignRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("User not found with id: " + id));
+            return modelMapper.map(campaign, CampaignResponseDto.class);
+        }
+
+        @Override
+        public List<CampaignResponseDto> getCampaignsByUserId(Long userId) {
+            List<Campaign> campaigns = campaignRepository.findByUserUserId(userId);
+            return campaigns.stream().map(campaign -> modelMapper.map(campaign, CampaignResponseDto.class)).toList();
+        }
+
+        @Override
+        public List<CampaignResponseDto> getAllCampaigns() {
+            List<Campaign> campaigns = campaignRepository.findAll();
+            return campaigns.stream().map(campaign -> modelMapper.map(campaign, CampaignResponseDto.class)).toList();
         }
 
 
-        // Save campaign
-        Campaign savedCampaign = campaignRepository.save(campaign);
-
-        // Map Entity to Response DTO
-        return modelMapper.map(savedCampaign, CampaignResponseDto.class);
-    }
-
-    @Override
-    public CampaignResponseDto getCampaignById(Long id) {
-        Campaign campaign = campaignRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("User not found with id: " + id));
-        return modelMapper.map(campaign, CampaignResponseDto.class);
-    }
-
-    @Override
-    public List<CampaignResponseDto> getCampaignsByUserId(Long userId) {
-        List<Campaign> campaigns = campaignRepository.findByUserUserId(userId);
-        return campaigns.stream().map(campaign -> modelMapper.map(campaign, CampaignResponseDto.class)).toList();
-    }
-
-    @Override
-    public List<CampaignResponseDto> getAllCampaigns() {
-        List<Campaign> campaigns = campaignRepository.findAll();
-        return campaigns.stream().map(campaign -> modelMapper.map(campaign, CampaignResponseDto.class)).toList();
-    }
-
-
-    @Override
-    public List<Campaign> getAllCampaignsOfUser() {
-        User user = authHelper.getAuthenticatedUser();
-        return user.getCampaigns();
+        @Override
+        public List<Campaign> getAllCampaignsOfUser() {
+            User user = authHelper.getAuthenticatedUser();
+            return user.getCampaigns();
         }
 
-    @Override
-    public void deleteCampaign(Long id) {
-        Campaign campaign = campaignRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("User not found with id: " + id));
-        campaignRepository.deleteById(id);
+        @Override
+        public void deleteCampaign(Long id) {
+            campaignRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("User not found with id: " + id));
+            campaignRepository.deleteById(id);
+        }
     }
-}
 
