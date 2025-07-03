@@ -3,17 +3,17 @@ package com.project.crowdfunding.Services;
 import com.project.crowdfunding.Entity.Campaign;
 import com.project.crowdfunding.dto.request.CampaignRequestDto;
 import com.project.crowdfunding.dto.response.CampaignResponseDto;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
 public interface CampaignService {
 
+    List<Campaign> getAllCampaignsOfUser();
     CampaignResponseDto createCampaign(CampaignRequestDto campaign);
     CampaignResponseDto getCampaignById(Long id);
+    List<CampaignResponseDto> getCampaignByStatus(String status);
     List<CampaignResponseDto> getCampaignsByUserId(Long userId);
     List<CampaignResponseDto> getAllCampaigns();
-    List<Campaign> getAllCampaignsOfUser();
     void deleteCampaign(Long id);
 }
 

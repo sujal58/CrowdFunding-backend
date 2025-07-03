@@ -46,7 +46,7 @@ public class Campaign {
 
     @Enumerated(EnumType.STRING)
     @Column(length = 20)
-    private CampaignStatus status = CampaignStatus.ACTIVE;
+    private CampaignStatus status = CampaignStatus.PENDING;
 
     @Column(name = "created_at", columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
     private LocalDateTime createdAt = LocalDateTime.now();

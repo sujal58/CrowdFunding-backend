@@ -84,7 +84,17 @@ public class CampaignServiceImpl implements CampaignService{
             return modelMapper.map(campaign, CampaignResponseDto.class);
         }
 
-        @Override
+    @Override
+    public List<CampaignResponseDto> getCampaignByStatus(String status) {
+        if(status.isEmpty()){
+            throw new IllegalArgumentException("Campaign status is required!");
+        }
+
+        List<Campaign> campaigns = campaignRepository.findByStatus(CampaignStatus.fromString(status));
+        return campaigns.stream().map(campaign -> modelMapper.map(campaign, CampaignResponseDto.class)).toList();
+    }
+
+    @Override
         public List<CampaignResponseDto> getCampaignsByUserId(Long userId) {
             List<Campaign> campaigns = campaignRepository.findByUserUserId(userId);
             return campaigns.stream().map(campaign -> modelMapper.map(campaign, CampaignResponseDto.class)).toList();
