@@ -1,8 +1,10 @@
 package com.project.crowdfunding.Services;
 
 import com.project.crowdfunding.Entity.User;
+import com.project.crowdfunding.Enums.KycStatus;
 import com.project.crowdfunding.Exception.ResourceNotFoundException;
 import com.project.crowdfunding.Repository.UserRepository;
+import com.project.crowdfunding.dto.response.UserResponseDto;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
@@ -39,6 +41,17 @@ public class UserServiceImpl implements UserService {
         return user.getKycStatus().toString();
 
     }
+
+    @Override
+    public List<UserResponseDto> getUserByKycStatus(String status) {
+        if(status.isEmpty()){
+            throw new IllegalArgumentException("Campaign status is required!");
+        }
+
+        List<User> users = userRepository.findByKycStatus(KycStatus.fromString(status));
+        return users.stream().map(user -> modelMapper.map(user, UserResponseDto.class)).toList();
+    }
+
 
     @Override
     public User getUserByEmail(String email) {

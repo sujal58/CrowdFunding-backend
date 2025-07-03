@@ -54,6 +54,21 @@ public class CampaignController {
     }
 
     @Operation(
+            summary = "Get Campaign by status",
+            description = "Retrieves a specific campaign using its status."
+    )
+    @GetMapping("/campaign/{status}")
+    public ResponseEntity<ApiResponse> getCampaignByStatus(@RequestParam String status) {
+        return ResponseEntity.ok(
+                ApiResponse.success(
+                        status + " campaign fetched successfully!",
+                        campaignService.getCampaignByStatus(status),
+                        servletRequest.getRequestURI()
+                )
+        );
+    }
+
+    @Operation(
             summary = "Get All Campaigns",
             description = "Retrieves a list of all available campaigns, regardless of the creator."
     )
