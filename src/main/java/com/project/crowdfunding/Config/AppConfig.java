@@ -40,6 +40,7 @@ public class AppConfig {
     }
 
 
+
     @Component
     @RequiredArgsConstructor
     public class dataSeeder implements CommandLineRunner {

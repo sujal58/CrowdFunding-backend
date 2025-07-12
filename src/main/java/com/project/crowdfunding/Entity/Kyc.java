@@ -25,11 +25,14 @@ public class Kyc {
     @Column(name = "name", length = 255)
     private String name;
 
+    @Column(name = "email", length = 255)
+    private String email;
+
     @Column(name = "address")
     private String address;
 
-    @Column(name = "contact_no", length = 30, unique = true)
-    private String contactNo;
+    @Column(name = "phone", length = 30, unique = true)
+    private String phone;
 
     @Column(name = "document_number", length = 100, unique = true)
     private String documentNumber;

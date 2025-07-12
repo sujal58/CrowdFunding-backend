@@ -7,6 +7,7 @@ import com.project.crowdfunding.Enums.TransactionStatus;
 import com.project.crowdfunding.Repository.CampaignRepository;
 import com.project.crowdfunding.Repository.DonationRepository;
 import com.project.crowdfunding.dto.request.DonationRequestDto;
+import com.project.crowdfunding.dto.response.DonationResponseDto;
 import com.project.crowdfunding.utils.AuthHelper;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -53,16 +54,19 @@ public class DonationServiceImpl implements DonationService {
     }
 
     @Override
-    public List<Donation> getDonationsByDonor(Long donorId) {
+    public List<DonationResponseDto> getDonationsByDonorId(Long donorId) {
         User user = userService.getUserById(donorId);
-        return donationRepository.findByUser(user);
+        List<Donation> donations = donationRepository.findByUser(user);
+        return donations.stream().map(donation -> modelMapper.map(donation, DonationResponseDto.class)).toList();
     }
 
     @Override
-    public List<Donation> getDonationsByDonor() {
+    public List<DonationResponseDto> getDonationsByDonor() {
         String username = authHelper.getAuthenticatedUsername();
         User user = userService.getByUsername(username);
-        return donationRepository.findByUser(user);
+        List<Donation> donations = donationRepository.findByUser(user);
+
+        return donations.stream().map(donation -> modelMapper.map(donation, DonationResponseDto.class)).toList();
     }
 
     @Override

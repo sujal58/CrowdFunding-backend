@@ -2,11 +2,14 @@ package com.project.crowdfunding.controller;
 
 
 import com.project.crowdfunding.Services.UserService;
+import com.project.crowdfunding.dto.request.PasswordResetDto;
 import com.project.crowdfunding.dto.response.ApiResponse;
 import com.project.crowdfunding.dto.response.UserResponseDto;
+import com.project.crowdfunding.utils.AuthHelper;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.ResponseEntity;
@@ -24,6 +27,7 @@ public class UserController {
     private final UserService userService;
     private final ModelMapper modelMapper;
     private final HttpServletRequest servletRequest;
+    private final AuthHelper authHelper;
 
     @Operation(
             summary = "Get User by ID",
@@ -40,6 +44,22 @@ public class UserController {
                 )
         );
     }
+
+
+//    @Operation(
+//            summary = "Get current logged in user",
+//            description = "Fetches current logged in user details."
+//    )
+//    @GetMapping()
+//    public ResponseEntity<ApiResponse> getCurrentUser() {
+//        return ResponseEntity.ok(
+//                ApiResponse.success(
+//                        "User fetched successfully!",
+//                        userService.getCurrentUser(authHelper.getAuthenticatedUser()),
+//                        servletRequest.getRequestURI()
+//                )
+//        );
+//    }
 
     @Operation(
             summary = "Get All Users",
@@ -81,7 +101,7 @@ public class UserController {
             summary = "Get User by Kyc status",
             description = "Return the user based on Kyc status."
     )
-    @GetMapping("/user/{status}")
+    @GetMapping("/user")
     public ResponseEntity<ApiResponse> getUserByKycStatus(@RequestParam String status) {
         return ResponseEntity.ok(
                 ApiResponse.success(
@@ -117,6 +137,20 @@ public class UserController {
         return ResponseEntity.ok(
                 ApiResponse.success(
                         "User deleted successfully!"
+                )
+        );
+    }
+
+    @Operation(
+            summary = "Reset or forgot password",
+            description = "Change a password of user if forgot or reset"
+    )
+    @PostMapping("/reset-password")
+    public ResponseEntity<ApiResponse> resetPassword(@Valid PasswordResetDto passwordResetDto) {
+        userService.resetPassword(passwordResetDto);
+        return ResponseEntity.ok(
+                ApiResponse.success(
+                        "Password Reset successfully!"
                 )
         );
     }

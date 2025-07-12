@@ -5,6 +5,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 
@@ -18,7 +19,8 @@ public class KycResponseDto {
     private Long user;
     private String name;
     private String address;
-    private String contactNo;
+    private String phone;
+    private LocalDate dob;
     private String documentNumber;
     private String documentUrlFront;
     private String documentUrlBack;
