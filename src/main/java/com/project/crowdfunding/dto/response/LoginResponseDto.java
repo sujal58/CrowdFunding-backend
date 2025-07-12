@@ -9,7 +9,7 @@ import java.util.List;
 @AllArgsConstructor
 public class LoginResponseDto {
 
-    private String username;
+    private String userId;
 
     private String token;
 

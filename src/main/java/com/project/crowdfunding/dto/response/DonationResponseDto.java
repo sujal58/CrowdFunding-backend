@@ -13,10 +13,7 @@ import java.time.OffsetDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 public class DonationResponseDto {
-
-    private Long id;
-    private Long donorId;
-    private Long campaignId;
+    private String campaign;
     private BigDecimal amount;
     private String status;
     private String transactionId;

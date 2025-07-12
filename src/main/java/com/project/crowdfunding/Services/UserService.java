@@ -1,6 +1,7 @@
 package com.project.crowdfunding.Services;
 
 import com.project.crowdfunding.Entity.User;
+import com.project.crowdfunding.dto.request.PasswordResetDto;
 import com.project.crowdfunding.dto.response.UserResponseDto;
 
 import java.util.List;
@@ -14,4 +15,5 @@ public interface UserService {
     User getUserByEmail(String email);
     List<User> getAllUsers();
     void deleteUser(Long id);
+    void resetPassword(PasswordResetDto passwordResetDto);
 }

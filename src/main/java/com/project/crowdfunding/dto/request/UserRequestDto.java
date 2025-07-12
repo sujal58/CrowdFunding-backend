@@ -17,6 +17,9 @@ public class UserRequestDto {
     @NotBlank(message = "username is required.")
     private String username;
 
+    @NotBlank(message = "Country is required.")
+    private String country;
+
     @NotBlank(message = "Password cannot be empty.")
     private String password;
 

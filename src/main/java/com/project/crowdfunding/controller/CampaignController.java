@@ -57,7 +57,7 @@ public class CampaignController {
             summary = "Get Campaign by status",
             description = "Retrieves a specific campaign using its status."
     )
-    @GetMapping("/campaign/{status}")
+    @GetMapping("/campaign")
     public ResponseEntity<ApiResponse> getCampaignByStatus(@RequestParam String status) {
         return ResponseEntity.ok(
                 ApiResponse.success(

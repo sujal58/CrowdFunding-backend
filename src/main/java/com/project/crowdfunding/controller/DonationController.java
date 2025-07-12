@@ -78,7 +78,7 @@ public class DonationController {
         return ResponseEntity.ok(
                 ApiResponse.success(
                         "Donations by donor fetched successfully!",
-                        donationService.getDonationsByDonor(donorId),
+                        donationService.getDonationsByDonorId(donorId),
                         servletRequest.getRequestURI()
                 )
         );

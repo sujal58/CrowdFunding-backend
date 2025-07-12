@@ -22,7 +22,6 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @EnableWebSecurity
 public class SecurityConfig {
 
-
     @Autowired
     private UserDetailsServiceImpl userDetailsServiceImpl;
     @Autowired
@@ -40,7 +39,7 @@ public class SecurityConfig {
         return http
                 .authorizeHttpRequests(request ->
                         request.requestMatchers(Role_Creator).hasAuthority("ROLE_CREATOR")
-                                .requestMatchers("/api/v1/roles","/api/v1/users", "/api/v1/kyc/status/**").hasAuthority("ROLE_ADMIN")
+                                .requestMatchers("/api/v1/roles","/api/v1/users", "/api/v1/campaigns/campaign", "/api/v1/kyc/status/**").hasAuthority("ROLE_ADMIN")
                                 .requestMatchers("api/v1/kyc/submit").authenticated()
                                 .anyRequest().permitAll()
                         )
@@ -70,7 +69,7 @@ public class SecurityConfig {
 
     private String[] Role_Creator =
             {
-                "/api/v1/campaigns",
+//                "/api/v1/campaigns",
                 "/api/v1/campaigns/delete/**",
                 "api/v1/campaigns/total"
             };

@@ -16,9 +16,12 @@ public class KycRequestDto {
     @NotBlank(message = "Address is required.")
     private String address;
 
+    @NotBlank(message = "Email is required.")
+    private String email;
+
     @NotBlank(message = "Phone number is required.")
     @Pattern(regexp = "^\\+?[0-9]{7,15}$", message = "Invalid phone number.")
-    private String contactNo;
+    private String phone;
 
     @NotBlank(message = "Document number is required.")
     private String documentNumber;

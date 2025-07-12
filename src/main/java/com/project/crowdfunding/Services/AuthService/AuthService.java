@@ -97,7 +97,7 @@ public class AuthService {
             String JwtToken = jwtService.GenerateToken(userDetails.getUsername());
 
             List<String> roles = userDetails.getAuthorities().stream().map(GrantedAuthority::getAuthority).toList();
-            return new LoginResponseDto(userDetails.getUsername(), JwtToken, roles, user.getKycStatus().toString());
+            return new LoginResponseDto(user.getUserId().toString(), JwtToken, roles, user.getKycStatus().toString());
         }catch (BadCredentialsException e){
             throw new BadCredentialsException("Invalid username and password!");
         }catch (Exception e){
