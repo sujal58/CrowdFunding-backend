@@ -77,6 +77,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void resetPassword(PasswordResetDto passwordResetDto) {
+        System.out.println(passwordResetDto.getEmail());
         User user = getUserByEmail(passwordResetDto.getEmail());
         String messageType = passwordResetDto.getMessage();
 
@@ -86,6 +87,12 @@ public class UserServiceImpl implements UserService {
             validateOldPassword(passwordResetDto.getOldPassword(), user.getPassword());
             updatePassword(user, passwordResetDto.getNewPassword());
         }
+    }
+
+    @Override
+    public boolean userExistByEmail(String email) {
+        return userRepository.existsByEmail(email);
+
     }
 
 
@@ -101,6 +108,9 @@ public class UserServiceImpl implements UserService {
     }
 
     private void updatePassword(User user, String newPassword) {
+        if(passwordEncoder.matches(newPassword, user.getPassword())){
+            throw new IllegalArgumentException("New password cannot be similar to current");
+        }
         String hashedPassword = passwordEncoder.encode(newPassword);
         user.setPassword(hashedPassword);
         userRepository.save(user);

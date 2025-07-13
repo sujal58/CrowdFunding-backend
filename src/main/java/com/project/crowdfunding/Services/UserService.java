@@ -16,4 +16,5 @@ public interface UserService {
     List<User> getAllUsers();
     void deleteUser(Long id);
     void resetPassword(PasswordResetDto passwordResetDto);
+    boolean userExistByEmail(String email);
 }
