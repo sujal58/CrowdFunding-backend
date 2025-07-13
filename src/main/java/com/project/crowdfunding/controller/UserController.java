@@ -146,7 +146,8 @@ public class UserController {
             description = "Change a password of user if forgot or reset"
     )
     @PostMapping("/reset-password")
-    public ResponseEntity<ApiResponse> resetPassword(@Valid PasswordResetDto passwordResetDto) {
+    public ResponseEntity<ApiResponse> resetPassword(@Valid @RequestBody PasswordResetDto passwordResetDto) {
+        System.out.println(passwordResetDto.getEmail());
         userService.resetPassword(passwordResetDto);
         return ResponseEntity.ok(
                 ApiResponse.success(

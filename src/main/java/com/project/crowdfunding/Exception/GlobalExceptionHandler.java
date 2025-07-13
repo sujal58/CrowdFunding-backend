@@ -31,7 +31,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(UsernameNotFoundException.class)
     public ResponseEntity<ApiResponse> handleUsernameNotFoundException(UsernameNotFoundException ex, HttpServletRequest servletRequest){
-        log.error("Username not found!", ex);
+        log.error(ex.getMessage()); //"Username not found!",
         String message = ex.getMessage();
         return new ResponseEntity<>(ApiResponse.error("Username Not found!", message, servletRequest.getRequestURI()), HttpStatus.NOT_FOUND);
     }
