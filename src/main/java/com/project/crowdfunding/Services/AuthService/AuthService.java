@@ -121,8 +121,6 @@ public class AuthService {
             // Otherwise, default to ROLE_USER
             if ("admin".equalsIgnoreCase(roleStr)) {
                 mappedRoles.add(UserRoles.ROLE_ADMIN);
-            } else if("creator".equalsIgnoreCase(roleStr)) {
-                mappedRoles.add(UserRoles.ROLE_CREATOR);
             }else {
                 mappedRoles.add(UserRoles.ROLE_USER);
             }

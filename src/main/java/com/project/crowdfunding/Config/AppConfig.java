@@ -55,8 +55,8 @@ public class AppConfig {
             Role adminRole = roleRepository.findByRoleName(UserRoles.ROLE_ADMIN)
                     .orElseGet(() -> roleRepository.save(new Role(UserRoles.ROLE_ADMIN)));
 
-            Role creatorRole = roleRepository.findByRoleName(UserRoles.ROLE_CREATOR)
-                    .orElseGet(() -> roleRepository.save(new Role(UserRoles.ROLE_CREATOR)));
+            Role userRole = roleRepository.findByRoleName(UserRoles.ROLE_USER)
+                    .orElseGet(() -> roleRepository.save(new Role(UserRoles.ROLE_USER)));
 
 
             if(userRepository.findByUsername("admin").isEmpty()){
@@ -73,18 +73,18 @@ public class AppConfig {
 
             if(userRepository.findByUsername("sujal").isEmpty()){
                 User user = new User();
-                user.setEmail("sujal.creator@gmail.com");
+                user.setEmail("pandeysujal258@gmail.com");
                 user.setUsername("sujal");
                 user.setPassword(passwordEncoder().encode("sujal@123"));
                 user.setName("Sujal Pandey");
                 user.setCity("Butwal");
                 user.setCountry("Nepal");
-                user.setRoles(Set.of(creatorRole));
+                user.setRoles(Set.of(userRole));
                 userRepository.save(user);
             }
 
-            if(roleRepository.findByRoleName(UserRoles.ROLE_CREATOR).isEmpty()){
-                roleRepository.save(new Role(UserRoles.ROLE_CREATOR));
+            if(roleRepository.findByRoleName(UserRoles.ROLE_ADMIN).isEmpty()){
+                roleRepository.save(new Role(UserRoles.ROLE_ADMIN));
             }
 
             if(roleRepository.findByRoleName(UserRoles.ROLE_USER).isEmpty()){

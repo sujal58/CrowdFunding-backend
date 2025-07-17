@@ -8,10 +8,10 @@ import java.time.OffsetDateTime;
 public class NotificationResponseDto {
     private Long notificationId;
     private String message;
-    private String actionUrl;
-    private String actionLabel;
     private boolean read;
     private String notificationType;
+    private String username;
+    private boolean broadcast;
     private OffsetDateTime createdAt;
 }
 

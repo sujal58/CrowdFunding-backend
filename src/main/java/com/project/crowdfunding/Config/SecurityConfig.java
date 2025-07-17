@@ -38,7 +38,7 @@ public class SecurityConfig {
 
         return http
                 .authorizeHttpRequests(request ->
-                        request.requestMatchers(Role_Creator).hasAuthority("ROLE_CREATOR")
+                        request.requestMatchers(Role_Creator).hasAuthority("ROLE_USER")
                                 .requestMatchers("/api/v1/roles","/api/v1/users", "/api/v1/campaigns/campaign", "/api/v1/kyc/status/**").hasAuthority("ROLE_ADMIN")
                                 .requestMatchers("api/v1/kyc/submit").authenticated()
                                 .anyRequest().permitAll()
