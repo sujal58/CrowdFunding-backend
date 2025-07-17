@@ -77,7 +77,6 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void resetPassword(PasswordResetDto passwordResetDto) {
-        System.out.println(passwordResetDto.getEmail());
         User user = getUserByEmail(passwordResetDto.getEmail());
         String messageType = passwordResetDto.getMessage();
 

@@ -1,9 +1,11 @@
 package com.project.crowdfunding.controller;
 
+import com.project.crowdfunding.Services.EmailService;
 import com.project.crowdfunding.Services.UserService;
 import com.project.crowdfunding.dto.response.ApiResponse;
 import com.project.crowdfunding.utils.OtpHelper;
 import io.swagger.v3.oas.annotations.Operation;
+import jakarta.mail.MessagingException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -19,13 +21,14 @@ import org.springframework.web.bind.annotation.RestController;
 public class OtpController {
 
     private final UserService userService;
+    private final EmailService emailService;
 
     @Operation(
             summary = "Generate and send otp to email",
             description = "Generate a random 6 digit otp , store it in cache and send to provided email"
     )
     @PostMapping("/generate")
-    public ResponseEntity<ApiResponse> generateAndSendOTP(@RequestParam String email) {
+    public ResponseEntity<ApiResponse> generateAndSendOTP(@RequestParam String email) throws MessagingException {
             boolean userExist = userService.userExistByEmail(email);
             System.out.println(userExist);
             if(!userExist){
@@ -34,7 +37,7 @@ public class OtpController {
             String otp = OtpHelper.generateOTP();
             OtpHelper.storeOtp(email, otp);
             log.info("otp: {}", otp);
-//            EmailService.sendOTPEmail(email, otp);
+            emailService.sendOTPEmail(email, otp);
             return ResponseEntity.ok(ApiResponse.success("OTP sent to " + email)) ;
 
     }
@@ -50,6 +53,6 @@ public class OtpController {
             return ResponseEntity.ok(ApiResponse.success("OTP verified successfully")) ;
         }
         throw new IllegalArgumentException("Invalid or expired OTP");
-//        return "Invalid or expired OTP";
+
     }
 }

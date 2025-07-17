@@ -31,11 +31,11 @@ public class Notification {
     @Column(nullable = false)
     private boolean read = false;
 
-    @Column(name = "action_url", length = 255)
-    private String actionUrl;
-
-    @Column(name = "action_label", length = 50)
-    private String actionLabel;
+//    @Column(name = "action_url", length = 255)
+//    private String actionUrl;
+//
+//    @Column(name = "action_label", length = 50)
+//    private String actionLabel;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "notification_type", length = 20)
