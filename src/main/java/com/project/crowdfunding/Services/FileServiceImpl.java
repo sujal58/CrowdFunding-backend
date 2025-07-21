@@ -11,6 +11,7 @@ import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 
@@ -32,7 +33,7 @@ public class FileServiceImpl implements FileService{
         }
 
         try{
-            String originalFileName = Paths.get(file.getOriginalFilename()).getFileName().toString();
+            String originalFileName = Paths.get(Objects.requireNonNull(file.getOriginalFilename())).getFileName().toString();
 
             String fileName = fileType+"_"+ UUID.randomUUID()+"_"+ originalFileName;
 

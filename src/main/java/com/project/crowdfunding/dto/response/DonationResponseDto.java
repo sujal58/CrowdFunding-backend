@@ -6,16 +6,16 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
-import java.time.OffsetDateTime;
+import java.time.LocalDateTime;
 
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class DonationResponseDto {
-    private String campaign;
+    private String campaignName;
     private BigDecimal amount;
     private String status;
     private String transactionId;
-    private OffsetDateTime createdAt;
+    private LocalDateTime createdAt;
 }

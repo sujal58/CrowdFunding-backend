@@ -23,4 +23,6 @@ public class CampaignResponseDto {
     private String status;
     private LocalDateTime createdAt;
     private Long userId;
+    private String username;
+    private String campaignImage;
 }

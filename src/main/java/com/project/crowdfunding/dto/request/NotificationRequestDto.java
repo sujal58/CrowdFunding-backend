@@ -8,8 +8,8 @@ import lombok.Data;
 @Data
 public class NotificationRequestDto {
 
-    @NotNull(message = "User ID is required.")
-    private Long userId;
+    @NotNull(message = "Username ID is required.")
+    private String username;
 
     @NotBlank(message = "Notification message cannot be empty.")
     private String message;
