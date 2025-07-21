@@ -10,6 +10,8 @@ import com.project.crowdfunding.Repository.UserRepository;
 import com.project.crowdfunding.dto.request.CampaignRequestDto;
 import com.project.crowdfunding.dto.response.CampaignResponseDto;
 import com.project.crowdfunding.utils.AuthHelper;
+import com.project.crowdfunding.utils.ImageHelper;
+import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
@@ -57,14 +59,24 @@ public class CampaignServiceImpl implements CampaignService{
             campaign.setUser(user);
             campaign.setCreatedAt(LocalDateTime.now());
 
-            for (MultipartFile image : campaignDto.getSupportingImages()) {
-                String savedImages;
-                if (!image.getContentType().startsWith("image/")) {
-                    throw new IllegalArgumentException("Supporting document can only have image file!");
-                }
+            if (campaignDto.getSupportingImages() != null) {
+                for (MultipartFile image : campaignDto.getSupportingImages()) {
+                    String savedImages;
 
-                savedImages = fileService.uploadImage(image, "campaign");
-                campaign.getSupportingImages().add(savedImages);
+                    if (image == null || image.isEmpty()) {
+                        continue;
+                    }
+                    if (!image.getContentType().startsWith("image/")) {
+                        throw new IllegalArgumentException("Supporting document can only have image file!");
+                    }
+
+                    savedImages = fileService.uploadImage(image, "campaign");
+                    campaign.getSupportingImages().add(savedImages);
+                }
+            }
+
+            if(campaignDto.getCampaignImage() == null){
+                throw new IllegalArgumentException("Campaign Image cannot be empty!");
             }
 
             String savedCampaignImages = fileService.uploadImage(campaignDto.getCampaignImage(), "campaign");
@@ -80,21 +92,21 @@ public class CampaignServiceImpl implements CampaignService{
 
         @Override
         public CampaignResponseDto getCampaignById(Long id) {
-            Campaign campaign = campaignRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("User not found with id: " + id));
+            Campaign campaign = campaignRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Campaign not found with id: " + id));
             return modelMapper.map(campaign, CampaignResponseDto.class);
         }
 
-    @Override
-    public List<CampaignResponseDto> getCampaignByStatus(String status) {
-        if(status.isEmpty()){
+        @Override
+        public List<CampaignResponseDto> getCampaignByStatus(CampaignStatus status) {
+        if(status == null){
             throw new IllegalArgumentException("Campaign status is required!");
         }
 
-        List<Campaign> campaigns = campaignRepository.findByStatus(CampaignStatus.fromString(status));
+        List<Campaign> campaigns = campaignRepository.findByStatus(status);
         return campaigns.stream().map(campaign -> modelMapper.map(campaign, CampaignResponseDto.class)).toList();
     }
 
-    @Override
+        @Override
         public List<CampaignResponseDto> getCampaignsByUserId(Long userId) {
             List<Campaign> campaigns = campaignRepository.findByUserUserId(userId);
             return campaigns.stream().map(campaign -> modelMapper.map(campaign, CampaignResponseDto.class)).toList();
@@ -103,7 +115,11 @@ public class CampaignServiceImpl implements CampaignService{
         @Override
         public List<CampaignResponseDto> getAllCampaigns() {
             List<Campaign> campaigns = campaignRepository.findAll();
-            return campaigns.stream().map(campaign -> modelMapper.map(campaign, CampaignResponseDto.class)).toList();
+            return campaigns.stream().map(campaign -> {
+                CampaignResponseDto dto = modelMapper.map(campaign, CampaignResponseDto.class);
+                dto.setCampaignImage(ImageHelper.buildImageUrl(campaign.getCampaignImage()));
+                return dto;
+            }).toList();
         }
 
 
@@ -117,6 +133,14 @@ public class CampaignServiceImpl implements CampaignService{
         public void deleteCampaign(Long id) {
             campaignRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("User not found with id: " + id));
             campaignRepository.deleteById(id);
+        }
+
+        @Transactional
+        @Override
+        public Campaign changeCampaignStatus(Long campaignId, String status) {
+            Campaign campaign = campaignRepository.findById(campaignId).orElseThrow(() -> new IllegalArgumentException("Campaign not found with id: " + campaignId));
+            campaign.setStatus(CampaignStatus.fromString(status));
+            return campaignRepository.save(campaign);
         }
     }
 

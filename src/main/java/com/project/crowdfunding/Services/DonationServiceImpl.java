@@ -2,6 +2,7 @@ package com.project.crowdfunding.Services;
 
 import com.project.crowdfunding.Entity.Campaign;
 import com.project.crowdfunding.Entity.Donation;
+import com.project.crowdfunding.Entity.Payment;
 import com.project.crowdfunding.Entity.User;
 import com.project.crowdfunding.Enums.TransactionStatus;
 import com.project.crowdfunding.Repository.CampaignRepository;
@@ -42,6 +43,23 @@ public class DonationServiceImpl implements DonationService {
         donation.setCampaign(campaign);
         donation.setStatus(TransactionStatus.COMPLETED);
        campaign.setCurrentAmount(campaign.getCurrentAmount().add(donationDto.getAmount()));
+        Donation savedDonation = donationRepository.save(donation);
+        user.getDonations().add(savedDonation);
+        userService.saveUser(user);
+        return savedDonation;
+    }
+
+    @Override
+    public Donation createFromPayment(Payment payment) {
+        User user = authHelper.getAuthenticatedUser();
+        Campaign campaign = campaignRepository.findById(payment.getCampaignId()).orElseThrow(()-> new IllegalArgumentException("Campaign not exist with id: "+payment.getCampaignId()));
+
+        Donation donation = new Donation();
+        donation.setAmount(payment.getAmount());
+        donation.setUser(user);
+        donation.setCampaign(campaign);
+        donation.setStatus(TransactionStatus.COMPLETED);
+        campaign.setCurrentAmount(campaign.getCurrentAmount().add(payment.getAmount()));
         Donation savedDonation = donationRepository.save(donation);
         user.getDonations().add(savedDonation);
         userService.saveUser(user);

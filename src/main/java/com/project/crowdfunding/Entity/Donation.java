@@ -40,11 +40,13 @@ public class Donation {
     @Column(nullable = false, length = 20)
     private TransactionStatus status;
 
-    @Column(name = "transaction_id", length = 100)
-    private String transactionId;
-
     @Column(name = "created_at", columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
     private LocalDateTime createdAt = LocalDateTime.now();
+
+    // 👇 New One-to-One Relationship with Payment
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "payment_id", referencedColumnName = "id")
+    private Payment payment;
 
 }
 

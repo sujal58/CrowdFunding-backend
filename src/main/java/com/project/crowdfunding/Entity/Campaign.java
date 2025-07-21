@@ -58,7 +58,7 @@ public class Campaign {
     @Column(name = "campaign_image", nullable = false)
     private String campaignImage;
 
-    @Column(name = "supporting_images")
+    @Column(name = "supporting_images", nullable = true)
     private List<String> supportingImages = new ArrayList<>();
 
     @ManyToMany

@@ -1,5 +1,6 @@
 package com.project.crowdfunding.controller;
 
+import com.project.crowdfunding.Enums.CampaignStatus;
 import com.project.crowdfunding.Services.CampaignService;
 import com.project.crowdfunding.dto.request.CampaignRequestDto;
 import com.project.crowdfunding.dto.response.ApiResponse;
@@ -10,6 +11,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequestMapping("/api/v1/campaigns")
@@ -26,9 +28,11 @@ public class CampaignController {
     )
     @PostMapping
     public ResponseEntity<ApiResponse> createCampaign(
-            @Valid @ModelAttribute CampaignRequestDto request
-            // @RequestParam(value="file", required = false) MultipartFile[] images
+            @Valid @ModelAttribute CampaignRequestDto request,
+            @RequestPart("campaignImage") MultipartFile campaignImage,
+            @RequestPart(value = "supportingImages", required = false) MultipartFile[] supportingImages
     ) {
+        System.out.println(request.getCampaignImage());
         return ResponseEntity.ok(
                 ApiResponse.success(
                         "Campaign created successfully!",
@@ -58,7 +62,7 @@ public class CampaignController {
             description = "Retrieves a specific campaign using its status."
     )
     @GetMapping("/campaign")
-    public ResponseEntity<ApiResponse> getCampaignByStatus(@RequestParam String status) {
+    public ResponseEntity<ApiResponse> getCampaignByStatus(@RequestParam CampaignStatus status) {
         return ResponseEntity.ok(
                 ApiResponse.success(
                         status + " campaign fetched successfully!",
@@ -102,6 +106,24 @@ public class CampaignController {
         return ResponseEntity.ok(
                 ApiResponse.success(
                         "Campaign deleted successfully!"
+                )
+        );
+    }
+
+    @Operation(
+            summary = "Update Campaign Status",
+            description = "Allows admin to update the Campaign status (e.g., active, suspicious, rejected) for a specific user."
+    )
+    @PostMapping("/status")
+    public ResponseEntity<ApiResponse> changeStatusOfCampaign(
+            @RequestParam(value = "campaignId") Long campaignId,
+            @RequestParam(value = "status") String status
+    ) {
+        return ResponseEntity.ok(
+                ApiResponse.success(
+                        "KYC status updated successfully!",
+                        campaignService.changeCampaignStatus(campaignId, status),
+                        servletRequest.getRequestURI()
                 )
         );
     }
