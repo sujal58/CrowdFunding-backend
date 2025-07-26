@@ -10,4 +10,10 @@ import java.util.Optional;
 @Repository
 public interface KycRepository extends JpaRepository<Kyc, Long> {
     Optional<Kyc> findByUserUserId(Long userId);
+
+    boolean existsByDocumentNumber(String docNumber);
+
+    boolean existsByPhone(String phone);
+
+    boolean existsByEmail(String email);
 }

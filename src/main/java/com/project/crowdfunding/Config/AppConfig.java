@@ -1,15 +1,13 @@
 package com.project.crowdfunding.Config;
 
 
-import com.project.crowdfunding.Entity.Campaign;
-import com.project.crowdfunding.Entity.Donation;
-import com.project.crowdfunding.Entity.Role;
-import com.project.crowdfunding.Entity.User;
+import com.project.crowdfunding.Entity.*;
 import com.project.crowdfunding.Enums.UserRoles;
 import com.project.crowdfunding.Repository.RoleRepository;
 import com.project.crowdfunding.Repository.UserRepository;
 import com.project.crowdfunding.dto.response.CampaignResponseDto;
 import com.project.crowdfunding.dto.response.DonationResponseDto;
+import com.project.crowdfunding.dto.response.KycResponseDto;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.boot.CommandLineRunner;
@@ -42,6 +40,10 @@ public class AppConfig {
         modelMapper.typeMap(Donation.class, DonationResponseDto.class).addMappings(mapper -> {
             mapper.map(src -> src.getCampaign().getTitle(), DonationResponseDto::setCampaignName);
             mapper.map(src-> src.getPayment().getPaymentId(), DonationResponseDto::setTransactionId);
+        });
+
+        modelMapper.typeMap(Kyc.class, KycResponseDto.class).addMappings(mapper -> {
+            mapper.map(src -> src.getUser().getKycStatus(), KycResponseDto::setStatus);
         });
 
         return modelMapper;

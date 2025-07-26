@@ -1,5 +1,6 @@
 package com.project.crowdfunding.dto.response;
 
+import com.project.crowdfunding.Enums.NotificationType;
 import lombok.Data;
 
 import java.time.OffsetDateTime;
@@ -9,7 +10,7 @@ public class NotificationResponseDto {
     private Long notificationId;
     private String message;
     private boolean read;
-    private String notificationType;
+    private NotificationType notificationType;
     private String username;
     private boolean broadcast;
     private OffsetDateTime createdAt;
