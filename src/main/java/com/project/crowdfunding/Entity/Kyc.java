@@ -6,7 +6,6 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
@@ -60,9 +59,8 @@ public class Kyc {
     @Column(name = "selfie_url", length = 255)
     private String imageUrl;
 
-    @Column(name = "face_match_score", precision = 5, scale = 2)
-    private BigDecimal faceMatchScore;
-
+    @Column(name = "face_match_score")
+    private Double faceMatchScore;
 
     @Column(name = "reviewed_by", length = 100)
     private String reviewedBy;

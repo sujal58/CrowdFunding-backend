@@ -15,17 +15,18 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class KycResponseDto {
 
-    private Long kycId;
-    private Long user;
     private String name;
+    private String email;
     private String address;
     private String phone;
     private LocalDate dob;
+    private String documentType;
     private String documentNumber;
     private String documentUrlFront;
     private String documentUrlBack;
     private String imageUrl;
     private String status;
+    private Double faceMatchScore;
     private String reviewedBy;
     private LocalDateTime reviewedAt;
     private LocalDateTime createdAt;

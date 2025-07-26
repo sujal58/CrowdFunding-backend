@@ -13,7 +13,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Objects;
 import java.util.Set;
-import java.util.UUID;
 
 @Service
 public class FileServiceImpl implements FileService{
@@ -35,7 +34,7 @@ public class FileServiceImpl implements FileService{
         try{
             String originalFileName = Paths.get(Objects.requireNonNull(file.getOriginalFilename())).getFileName().toString();
 
-            String fileName = fileType+"_"+ UUID.randomUUID()+"_"+ originalFileName;
+            String fileName = fileType+"_"+ username +"_"+ originalFileName;
 
             Path userDirectory;
             if(fileType.equals("campaign")){

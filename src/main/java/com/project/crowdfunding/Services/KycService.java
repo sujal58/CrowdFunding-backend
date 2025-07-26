@@ -13,7 +13,7 @@ public interface KycService {
                                       MultipartFile backDoc,
                                       MultipartFile image);
     List<KycResponseDto> getAllKyc();
-    Kyc getByUserId(Long userId);
+    KycResponseDto getByUserId(Long userId);
     Kyc changeStatusByUserId(Long userId, String status);
     void deleteKycByUserId(Long userId);
 }
