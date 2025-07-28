@@ -19,7 +19,7 @@ public class Notification {
     private Long notificationId;
 
     @ManyToOne
-    @JoinColumn(name = "user_id", nullable = false)
+    @JoinColumn(name = "user_id")
     private User user;
 
     @Column(nullable = false, length = 255)
@@ -30,12 +30,6 @@ public class Notification {
 
     @Column(nullable = false)
     private boolean read = false;
-
-//    @Column(name = "action_url", length = 255)
-//    private String actionUrl;
-//
-//    @Column(name = "action_label", length = 50)
-//    private String actionLabel;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "notification_type", length = 20)

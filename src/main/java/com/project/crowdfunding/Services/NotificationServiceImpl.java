@@ -2,10 +2,11 @@ package com.project.crowdfunding.Services;
 
 import com.project.crowdfunding.Entity.Notification;
 import com.project.crowdfunding.Entity.User;
-import com.project.crowdfunding.Enums.NotificationType;
 import com.project.crowdfunding.Exception.ResourceNotFoundException;
 import com.project.crowdfunding.Repository.NotificationRepository;
+import com.project.crowdfunding.Services.Redis.RedisPublisher;
 import com.project.crowdfunding.dto.request.NotificationRequestDto;
+import com.project.crowdfunding.dto.response.NotificationResponseDto;
 import com.project.crowdfunding.utils.AuthHelper;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
@@ -25,6 +26,8 @@ public class NotificationServiceImpl implements NotificationService {
 
     private final AuthHelper authHelper;
 
+    private final RedisPublisher redisPublisher;
+
     @Override
     public List<Notification> getAllNotifications() {
         return notificationRepository.findAll();
@@ -32,15 +35,52 @@ public class NotificationServiceImpl implements NotificationService {
 
     @Override
     public Notification sendNotification(NotificationRequestDto notificationDto) {
-        String username = authHelper.getAuthenticatedUsername();
-        User user = userService.getByUsername(username);
+        User user = userService.getByUsername(notificationDto.getUsername());
+
+        if (user == null) {
+            throw new IllegalArgumentException("User not found: " + notificationDto.getUsername());
+        }
 
         Notification notification = new Notification();
         notification.setUser(user);
-        notification.setNotificationType(NotificationType.fromString(notificationDto.getNotificationType()));
+        notification.setNotificationType(notificationDto.getNotificationType());
         notification.setMessage(notificationDto.getMessage());
 
-        return notificationRepository.save(notification);
+        Notification savedNotification =  notificationRepository.save(notification);
+
+        // Publish real-time WebSocket notification
+        try {
+            NotificationResponseDto webSocketNotification = modelMapper.map(savedNotification, NotificationResponseDto.class);
+            webSocketNotification.setBroadcast(false);
+            webSocketNotification.setUsername(notificationDto.getUsername());
+
+            redisPublisher.publish(webSocketNotification);
+        } catch (Exception e) {
+            System.err.println("Error publishing WebSocket notification: " + e.getMessage());
+        }
+
+        return savedNotification;
+    }
+
+    @Override
+    public void broadcastNotification(NotificationRequestDto notificationDto) {
+        Notification notification = new Notification();
+        notification.setUser(null);
+        notification.setNotificationType(notificationDto.getNotificationType());
+        notification.setMessage(notificationDto.getMessage());
+
+        Notification savedNotification =  notificationRepository.save(notification);
+
+        // Publish real-time WebSocket notification
+        try {
+            NotificationResponseDto webSocketNotification = modelMapper.map(savedNotification, NotificationResponseDto.class);
+            webSocketNotification.setBroadcast(true);
+            webSocketNotification.setUsername(notificationDto.getUsername());
+
+            redisPublisher.publish(webSocketNotification);
+        } catch (Exception e) {
+            System.err.println("Error publishing WebSocket notification: " + e.getMessage());
+        }
     }
 
 

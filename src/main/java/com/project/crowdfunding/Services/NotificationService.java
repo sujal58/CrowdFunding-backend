@@ -8,6 +8,7 @@ import java.util.List;
 public interface NotificationService {
     List<Notification> getAllNotifications();
     Notification sendNotification(NotificationRequestDto dto);
+    void broadcastNotification(NotificationRequestDto dto);
     List<Notification> getNotificationsForUser(Long userId);
     List<Notification> getUnreadNotifications(Long userId);
     Notification getNotificationById(Long id);

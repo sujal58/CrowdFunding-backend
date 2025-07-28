@@ -113,6 +113,22 @@ public class UserController {
     }
 
     @Operation(
+            summary = "Get Kyc status by userId",
+            description = "Fetches kyc status of user."
+    )
+    @GetMapping("/kyc-status")
+    public ResponseEntity<ApiResponse> getKycStatusByUser(@RequestParam Long userId) {
+        return ResponseEntity.ok(
+                ApiResponse.success(
+                        "Kyc status fetched successfully!",
+                        userService.findKycStatusByUserId(userId),
+                        servletRequest.getRequestURI()
+                )
+        );
+    }
+
+
+    @Operation(
             summary = "Get All User Details",
             description = "Fetches detailed information of all users."
     )

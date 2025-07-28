@@ -94,6 +94,11 @@ public class UserServiceImpl implements UserService {
 
     }
 
+    @Override
+    public KycStatus findKycStatusByUserId(Long userId) {
+        return userRepository.findKycStatusByUserId(userId);
+    }
+
 
     private void validateOldPassword(String oldPassword, String currentHashedPassword) {
         if (oldPassword == null || oldPassword.trim().isEmpty()) {
