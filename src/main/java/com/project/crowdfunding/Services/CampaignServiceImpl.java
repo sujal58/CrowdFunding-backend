@@ -40,15 +40,11 @@ public class CampaignServiceImpl implements CampaignService{
         public CampaignResponseDto createCampaign(
                 @Valid CampaignRequestDto campaignDto
         ) {
-
             String username = authHelper.getAuthenticatedUsername();
-
             User user = userRepository.findByUsername(username).orElseThrow(()-> new ResourceNotFoundException("User not found!"));
-
             if(!user.isVerified()){
                 throw new KycNotVerifiedException("User must complete KYC to access this resource.");
             }
-
             // Map DTO to Entity
             Campaign campaign = new Campaign();
             campaign.setTitle(campaignDto.getTitle());
@@ -62,30 +58,23 @@ public class CampaignServiceImpl implements CampaignService{
             if (campaignDto.getSupportingImages() != null) {
                 for (MultipartFile image : campaignDto.getSupportingImages()) {
                     String savedImages;
-
                     if (image == null || image.isEmpty()) {
                         continue;
                     }
                     if (!image.getContentType().startsWith("image/")) {
                         throw new IllegalArgumentException("Supporting document can only have image file!");
                     }
-
                     savedImages = fileService.uploadImage(image, "campaign");
                     campaign.getSupportingImages().add(savedImages);
                 }
             }
-
             if(campaignDto.getCampaignImage() == null){
                 throw new IllegalArgumentException("Campaign Image cannot be empty!");
             }
-
             String savedCampaignImages = fileService.uploadImage(campaignDto.getCampaignImage(), "campaign");
             campaign.setCampaignImage(savedCampaignImages);
-
-
             // Save campaign
             Campaign savedCampaign = campaignRepository.save(campaign);
-
             // Map Entity to Response DTO
             return modelMapper.map(savedCampaign, CampaignResponseDto.class);
         }
@@ -103,8 +92,11 @@ public class CampaignServiceImpl implements CampaignService{
         }
 
         List<Campaign> campaigns = campaignRepository.findByStatus(status);
-        return campaigns.stream().map(campaign -> modelMapper.map(campaign, CampaignResponseDto.class)).toList();
-    }
+            return campaigns.stream().map(campaign -> {
+                CampaignResponseDto dto = modelMapper.map(campaign, CampaignResponseDto.class);
+                dto.setCampaignImage(ImageHelper.buildImageUrl(campaign.getCampaignImage()));
+                return dto;
+            }).toList();    }
 
         @Override
         public List<CampaignResponseDto> getCampaignsByUserId(Long userId) {

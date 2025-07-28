@@ -1,6 +1,7 @@
 package com.project.crowdfunding.Services;
 
 import com.project.crowdfunding.Entity.User;
+import com.project.crowdfunding.Enums.KycStatus;
 import com.project.crowdfunding.dto.request.PasswordResetDto;
 import com.project.crowdfunding.dto.response.UserResponseDto;
 
@@ -17,4 +18,5 @@ public interface UserService {
     void deleteUser(Long id);
     void resetPassword(PasswordResetDto passwordResetDto);
     boolean userExistByEmail(String email);
+    KycStatus findKycStatusByUserId(Long userId);
 }

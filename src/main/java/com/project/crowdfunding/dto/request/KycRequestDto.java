@@ -2,6 +2,7 @@ package com.project.crowdfunding.dto.request;
 
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import lombok.Data;
 
@@ -29,7 +30,7 @@ public class KycRequestDto {
     @NotBlank(message = "Type of document is required.")
     private String documentType;
 
-    @NotBlank(message = "DOB similar to document is required.")
+    @NotNull(message = "DOB similar to document is required.")
     private LocalDate dob;
 
 

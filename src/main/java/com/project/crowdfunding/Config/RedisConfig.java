@@ -1,4 +1,4 @@
-package com.project.crowdfunding.config;
+package com.project.crowdfunding.Config;
 
 import com.project.crowdfunding.Services.NotificationService;
 import com.project.crowdfunding.Services.Redis.RedisSubscriber;

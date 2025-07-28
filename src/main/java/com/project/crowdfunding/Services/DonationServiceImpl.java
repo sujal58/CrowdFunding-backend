@@ -4,10 +4,12 @@ import com.project.crowdfunding.Entity.Campaign;
 import com.project.crowdfunding.Entity.Donation;
 import com.project.crowdfunding.Entity.Payment;
 import com.project.crowdfunding.Entity.User;
+import com.project.crowdfunding.Enums.NotificationType;
 import com.project.crowdfunding.Enums.TransactionStatus;
 import com.project.crowdfunding.Repository.CampaignRepository;
 import com.project.crowdfunding.Repository.DonationRepository;
 import com.project.crowdfunding.dto.request.DonationRequestDto;
+import com.project.crowdfunding.dto.request.NotificationRequestDto;
 import com.project.crowdfunding.dto.response.DonationResponseDto;
 import com.project.crowdfunding.utils.AuthHelper;
 import jakarta.transaction.Transactional;
@@ -30,6 +32,8 @@ public class DonationServiceImpl implements DonationService {
     private final AuthHelper authHelper;
 
     private final CampaignRepository campaignRepository;
+
+    private final NotificationService notificationService;
 
     @Override
     @Transactional
@@ -63,6 +67,31 @@ public class DonationServiceImpl implements DonationService {
         Donation savedDonation = donationRepository.save(donation);
         user.getDonations().add(savedDonation);
         userService.saveUser(user);
+
+        // Send notification to campaigner
+        String campaignerUsername = campaign.getUser().getUsername();
+        if (campaignerUsername != null && !campaignerUsername.isEmpty()) {
+            try {
+                String notificationMessage = String.format(
+                        "New donation of $%.2f received for campaign %s from %s.",
+                        payment.getAmount().doubleValue(),
+                        campaign.getTitle(),
+                        user.getUsername()
+                );
+
+                NotificationRequestDto notificationDto = new NotificationRequestDto(
+                        campaignerUsername,
+                        notificationMessage,
+                        NotificationType.DONATION
+                );
+
+                notificationService.sendNotification(notificationDto);
+            } catch (Exception e) {
+                System.err.println("Error sending notification: " + e.getMessage());
+            }
+        } else {
+            System.err.println("Campaigner username not found for campaign ID: " + payment.getCampaignId());
+        }
         return savedDonation;
     }
 

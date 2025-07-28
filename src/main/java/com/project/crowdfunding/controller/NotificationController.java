@@ -52,6 +52,21 @@ public class NotificationController {
     }
 
     @Operation(
+            summary = "Broadcast Notification",
+            description = "Broadcast a notification to all users."
+    )
+    @PostMapping("/broadcast")
+    public ResponseEntity<ApiResponse> broadcast(@Valid @RequestBody NotificationRequestDto request) {
+        request.setUsername(null);
+        notificationService.broadcastNotification(request);
+        return ResponseEntity.ok(
+                ApiResponse.success(
+                        "Notification broadcasted successfully!"
+                )
+        );
+    }
+
+    @Operation(
             summary = "Get All Notifications",
             description = "Retrieves all notifications from the system. Usually for administrative purposes."
     )

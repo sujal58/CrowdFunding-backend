@@ -68,12 +68,6 @@ public class StripePaymentService {
             payment.setStatus("created");
             paymentRepository.save(payment);
 
-//            String username = authHelper.getAuthenticatedUsername();
-//            NotificationRequestDto notificationRequestDto = new NotificationRequestDto();
-//            notificationRequestDto.setUsername(username);
-//            notificationRequestDto.setNotificationType();
-//
-//            notificationService.sendNotification(userEmail, "Payment initiated for campaign " + campaignId);
             log.info("Created Stripe PaymentIntent for user {}: paymentIntentId={}, amount={}", dto.getEmail(), paymentIntent.getId(), dto.getAmount());
             return paymentIntent.getClientSecret();
         } catch (StripeException e) {
