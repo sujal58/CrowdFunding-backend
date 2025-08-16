@@ -1,17 +1,18 @@
 package com.project.crowdfunding.Entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.project.crowdfunding.Enums.CampaignStatus;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-
-import com.project.crowdfunding.Enums.CampaignStatus;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "campaigns")
@@ -23,11 +24,12 @@ public class Campaign {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "campaign_id")
-    private Long id;
+    private Long campaignId;
 
     // Relationship to User
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "user_id", nullable = false)
+    @JsonBackReference
     private User user;
 
     @Column(nullable = false, length = 255)
@@ -44,13 +46,20 @@ public class Campaign {
 
     @Enumerated(EnumType.STRING)
     @Column(length = 20)
-    private CampaignStatus status = CampaignStatus.ACTIVE;
+    private CampaignStatus status = CampaignStatus.PENDING;
 
     @Column(name = "created_at", columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
     private LocalDateTime createdAt = LocalDateTime.now();
 
     @OneToMany(mappedBy = "campaign", cascade = CascadeType.ALL, orphanRemoval = true)
+//    @JsonBackReference
     private List<Comment> comments = new ArrayList<>();
+
+    @Column(name = "campaign_image", nullable = false)
+    private String campaignImage;
+
+    @Column(name = "supporting_images", nullable = true)
+    private List<String> supportingImages = new ArrayList<>();
 
     @ManyToMany
     @JoinTable(
@@ -67,7 +76,5 @@ public class Campaign {
             inverseJoinColumns = @JoinColumn(name = "tag_id")
     )
     private Set<Tag> tags = new HashSet<>();
-
-
 }
 

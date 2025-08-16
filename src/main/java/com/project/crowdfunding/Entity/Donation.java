@@ -1,5 +1,6 @@
 package com.project.crowdfunding.Entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.project.crowdfunding.Enums.TransactionStatus;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -10,25 +11,26 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "transactions")
+@Table(name = "donations")
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class Transaction {
+public class Donation {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "transaction_id")
-    private Long id;
+    @Column(name = "donation_id")
+    private Long donationId;
 
     // Relationship to Campaign
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @ManyToOne( optional = false, cascade = CascadeType.ALL)
     @JoinColumn(name = "campaign_id", nullable = false)
     private Campaign campaign;
 
     // Relationship to User
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @ManyToOne( optional = false,cascade = CascadeType.ALL)
     @JoinColumn(name = "user_id", nullable = false)
+    @JsonBackReference
     private User user;
 
     @Column(nullable = false, precision = 10, scale = 2)
@@ -38,11 +40,13 @@ public class Transaction {
     @Column(nullable = false, length = 20)
     private TransactionStatus status;
 
-    @Column(name = "transaction_id", length = 100)
-    private String transactionId;
-
     @Column(name = "created_at", columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
     private LocalDateTime createdAt = LocalDateTime.now();
+
+    // 👇 New One-to-One Relationship with Payment
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "payment_id", referencedColumnName = "id")
+    private Payment payment;
 
 }
 

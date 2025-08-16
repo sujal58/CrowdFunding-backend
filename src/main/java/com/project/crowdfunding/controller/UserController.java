@@ -1,0 +1,193 @@
+package com.project.crowdfunding.controller;
+
+
+import com.project.crowdfunding.Services.UserService;
+import com.project.crowdfunding.dto.request.PasswordResetDto;
+import com.project.crowdfunding.dto.response.ApiResponse;
+import com.project.crowdfunding.dto.response.UserResponseDto;
+import com.project.crowdfunding.utils.AuthHelper;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+import org.modelmapper.ModelMapper;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+import java.util.Map;
+
+@RestController
+@RequestMapping("/api/v1/users")
+@RequiredArgsConstructor
+@Tag(name = "Users", description = "Endpoints for user management and retrieval")
+public class UserController {
+
+    private final UserService userService;
+    private final ModelMapper modelMapper;
+    private final HttpServletRequest servletRequest;
+    private final AuthHelper authHelper;
+
+    @Operation(
+            summary = "Get User by ID",
+            description = "Fetches user details by user ID."
+    )
+    @GetMapping("/{id}")
+    public ResponseEntity<ApiResponse> getUserById(@PathVariable Long id) {
+        UserResponseDto userDto = modelMapper.map(userService.getUserById(id), UserResponseDto.class);
+        return ResponseEntity.ok(
+                ApiResponse.success(
+                        "User fetched successfully!",
+                        userDto,
+                        servletRequest.getRequestURI()
+                )
+        );
+    }
+
+
+//    @Operation(
+//            summary = "Get current logged in user",
+//            description = "Fetches current logged in user details."
+//    )
+//    @GetMapping()
+//    public ResponseEntity<ApiResponse> getCurrentUser() {
+//        return ResponseEntity.ok(
+//                ApiResponse.success(
+//                        "User fetched successfully!",
+//                        userService.getCurrentUser(authHelper.getAuthenticatedUser()),
+//                        servletRequest.getRequestURI()
+//                )
+//        );
+//    }
+
+    @Operation(
+            summary = "Get All Users",
+            description = "Retrieves a list of all users."
+    )
+    @GetMapping
+    public ResponseEntity<ApiResponse> getAllUser() {
+        List<UserResponseDto> users = userService.getAllUsers().stream()
+                .map(user -> modelMapper.map(user, UserResponseDto.class))
+                .toList();
+
+        return ResponseEntity.ok(
+                ApiResponse.success(
+                        "All users fetched successfully!",
+                        users,
+                        servletRequest.getRequestURI()
+                )
+        );
+    }
+
+    @Operation(
+            summary = "Get KYC Status by Username",
+            description = "Returns the KYC verification status for a specific username."
+    )
+    @GetMapping("/kyc/{user}")
+    public ResponseEntity<ApiResponse> getKycStatusByUsername(@RequestParam String user) {
+        String response = userService.getKycStatusByUsername(user);
+        return ResponseEntity.ok(
+                ApiResponse.success(
+                        "KYC status fetched successfully!",
+                        Map.of("username", user, "status", response),
+                        servletRequest.getRequestURI()
+                )
+        );
+    }
+
+
+    @Operation(
+            summary = "Get User by Kyc status",
+            description = "Return the user based on Kyc status."
+    )
+    @GetMapping("/user")
+    public ResponseEntity<ApiResponse> getUserByKycStatus(@RequestParam String status) {
+        return ResponseEntity.ok(
+                ApiResponse.success(
+                        "KYC status fetched successfully!",
+                        userService.getUserByKycStatus(status),
+                        servletRequest.getRequestURI()
+                )
+        );
+    }
+
+    @Operation(
+            summary = "Get Kyc status by userId",
+            description = "Fetches kyc status of user."
+    )
+    @GetMapping("/kyc-status")
+    public ResponseEntity<ApiResponse> getKycStatusByUser(@RequestParam Long userId) {
+        return ResponseEntity.ok(
+                ApiResponse.success(
+                        "Kyc status fetched successfully!",
+                        userService.findKycStatusByUserId(userId),
+                        servletRequest.getRequestURI()
+                )
+        );
+    }
+
+
+    @Operation(
+            summary = "Get All User Details",
+            description = "Fetches detailed information of all users."
+    )
+    @GetMapping("/details")
+    public ResponseEntity<ApiResponse> getAllUserDetails() {
+        return ResponseEntity.ok(
+                ApiResponse.success(
+                        "All users fetched successfully!",
+                        userService.getAllUsers(),
+                        servletRequest.getRequestURI()
+                )
+        );
+    }
+
+    @Operation(
+            summary = "Delete User",
+            description = "Deletes a user by their ID."
+    )
+    @DeleteMapping("/{id}")
+    public ResponseEntity<ApiResponse> deleteUser(@PathVariable Long id) {
+        userService.deleteUser(id);
+        return ResponseEntity.ok(
+                ApiResponse.success(
+                        "User deleted successfully!"
+                )
+        );
+    }
+
+    @Operation(
+            summary = "Reset or forgot password",
+            description = "Change a password of user if forgot or reset"
+    )
+    @PostMapping("/reset-password")
+    public ResponseEntity<ApiResponse> resetPassword(@Valid @RequestBody PasswordResetDto passwordResetDto) {
+        System.out.println(passwordResetDto.getEmail());
+        userService.resetPassword(passwordResetDto);
+        return ResponseEntity.ok(
+                ApiResponse.success(
+                        "Password Reset successfully!"
+                )
+        );
+    }
+
+//    @Operation(
+//        summary = "Update User",
+//        description = "Updates user information by user ID."
+//    )
+//    @PutMapping("/{id}")
+//    public ResponseEntity<ApiResponse> update(
+//            @PathVariable Long id,
+//            @RequestBody UserRequestDto request
+//    ) {
+//        UserResponseDto updatedUser = userService.update(id, request);
+//        return ResponseEntity.ok(
+//                ApiResponse.success(
+//                        "User updated successfully!",
+//                        updatedUser,
+//                        servletRequest.getRequestURI()
+//                )
+//        );
+//    }
+}

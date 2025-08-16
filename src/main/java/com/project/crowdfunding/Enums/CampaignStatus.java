@@ -2,6 +2,7 @@ package com.project.crowdfunding.Enums;
 
 public enum CampaignStatus {
 
+    PENDING,
     ACTIVE,
     COMPLETED,
     CANCELLED,
@@ -9,6 +10,7 @@ public enum CampaignStatus {
 
     public static CampaignStatus fromString(String status) {
         return switch (status.toLowerCase()) {
+            case "pending" -> PENDING;
             case "active" -> ACTIVE;
             case "completed" -> COMPLETED;
             case "cancelled" -> CANCELLED;
