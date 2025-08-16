@@ -41,6 +41,8 @@ public class KycServiceImpl implements KycService {
 
     private final FileService fileService;
 
+    private final EmailService emailService;
+
     @Override
     @Transactional
     public KycResponseDto submitVerification(
@@ -142,29 +144,31 @@ public class KycServiceImpl implements KycService {
 
             if ("success".equals(status)) {
                 kyc.getUser().setKycStatus(KycStatus.VERIFIED); // Adjust enum name if different
+                emailService.sendKycStatus(kycDto.getEmail(), "verified");
             } else {
                 kyc.getUser().setKycStatus(KycStatus.REJECTED); // Adjust enum name if different
+                emailService.sendKycStatus(kycDto.getEmail(), "rejected");
             }
+            Kyc savedKyc = kycRepository.save(kyc);
+            KycResponseDto mappedKyc = modelMapper.map(savedKyc, KycResponseDto.class);
+            mappedKyc.setStatus(user.getKycStatus().toString());
+            return  mappedKyc;
         } catch (Exception e) {
             // Handle FastAPI errors (e.g., 400 for invalid paths, 500 for server errors)
             kyc.getUser().setKycStatus(KycStatus.PENDING);
             throw new RuntimeException("KYC verification failed: " + e.getMessage());
         }
 
-        Kyc savedKyc = kycRepository.save(kyc);
-        KycResponseDto mappedKyc = modelMapper.map(savedKyc, KycResponseDto.class);
-        mappedKyc.setStatus(user.getKycStatus().toString());
-        return  mappedKyc;
+
     }
 
     @Override
     public List<KycResponseDto> getAllKyc() {
         return kycRepository.findAll().stream().map((kyc)->{
-
-                    KycResponseDto mappedKyc = modelMapper.map(kyc, KycResponseDto.class);
-                    mappedKyc.setStatus(kyc.getUser().getKycStatus().toString());
-                    return mappedKyc;
-                }
+            KycResponseDto mappedKyc = modelMapper.map(kyc, KycResponseDto.class);
+            mappedKyc.setStatus(kyc.getUser().getKycStatus().toString());
+            return mappedKyc;
+        }
         ).toList();
     }
 
@@ -185,6 +189,14 @@ public class KycServiceImpl implements KycService {
        user.setKycStatus(KycStatus.fromString(status));
        user.getKyc().setReviewedBy(admin);
        user.getKyc().setReviewedAt(LocalDateTime.now());
+
+       if(user.getKycStatus() != KycStatus.VERIFIED){
+           for(Campaign campaign: user.getCampaigns()){
+               if(campaign.getStatus().equals(CampaignStatus.ACTIVE)){
+                   campaign.setStatus(CampaignStatus.PENDING);
+               }
+           }
+       }
        User savedUser = userService.saveUser(user);
        return savedUser.getKyc();
     }

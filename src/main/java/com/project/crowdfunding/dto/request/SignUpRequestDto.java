@@ -34,8 +34,8 @@ public class SignUpRequestDto {
 
     private String city;
 
-    @NotBlank(message = "Country is required.")
-    private String country;
+//    @NotBlank(message = "Country is required.")
+//    private String country;
 
     @NotEmpty(message = "Role is required!")
     private Set<String> roles;

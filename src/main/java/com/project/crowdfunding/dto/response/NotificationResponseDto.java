@@ -1,5 +1,6 @@
 package com.project.crowdfunding.dto.response;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.project.crowdfunding.Enums.NotificationType;
 import lombok.Data;
 
@@ -13,6 +14,8 @@ public class NotificationResponseDto {
     private NotificationType notificationType;
     private String username;
     private boolean broadcast;
+
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ssXXX")
     private OffsetDateTime createdAt;
 }
 

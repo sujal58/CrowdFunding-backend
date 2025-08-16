@@ -1,13 +1,11 @@
 package com.project.crowdfunding.controller;
 
 
-import com.project.crowdfunding.Entity.Notification;
 import com.project.crowdfunding.Entity.User;
 import com.project.crowdfunding.Services.NotificationServiceImpl;
 import com.project.crowdfunding.Services.UserService;
 import com.project.crowdfunding.dto.request.NotificationRequestDto;
 import com.project.crowdfunding.dto.response.ApiResponse;
-import com.project.crowdfunding.dto.response.NotificationResponseDto;
 import com.project.crowdfunding.utils.AuthHelper;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -16,10 +14,11 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-import java.util.stream.Collectors;
+import java.security.Principal;
+import java.util.Map;
 
 
 @RestController
@@ -33,6 +32,8 @@ public class NotificationController {
     private final ModelMapper modelMapper;
     private final HttpServletRequest servletRequest;
     private final AuthHelper authHelper;
+    private final SimpMessagingTemplate messagingTemplate;
+
 
     @Operation(
             summary = "Send Notification",
@@ -40,8 +41,7 @@ public class NotificationController {
     )
     @PostMapping
     public ResponseEntity<ApiResponse> create(@Valid @RequestBody NotificationRequestDto request) {
-        String username = authHelper.getAuthenticatedUsername();
-        User user = userService.getByUsername(username);
+
         return ResponseEntity.ok(
                 ApiResponse.success(
                         "Notification sent successfully!",
@@ -72,14 +72,11 @@ public class NotificationController {
     )
     @GetMapping
     public ResponseEntity<ApiResponse> getAllNotifications() {
-        List<Notification> notifications = notificationService.getAllNotifications();
-        List<NotificationResponseDto> response = notifications.stream()
-                .map(n -> modelMapper.map(n, NotificationResponseDto.class))
-                .collect(Collectors.toList());
+
         return ResponseEntity.ok(
                 ApiResponse.success(
                         "All notifications fetched successfully!",
-                        response,
+                        notificationService.getAllNotifications(),
                         servletRequest.getRequestURI()
                 )
         );
@@ -93,14 +90,11 @@ public class NotificationController {
     public ResponseEntity<ApiResponse> getAllNotificationsByUser() {
         String username = authHelper.getAuthenticatedUsername();
         User user = userService.getByUsername(username);
-        List<Notification> notifications = notificationService.getNotificationsForUser(user.getUserId());
-        List<NotificationResponseDto> response = notifications.stream()
-                .map(n -> modelMapper.map(n, NotificationResponseDto.class))
-                .collect(Collectors.toList());
+
         return ResponseEntity.ok(
                 ApiResponse.success(
                         "All notifications fetched successfully!",
-                        response,
+                        notificationService.getNotificationsForUser(user.getUserId()),
                         servletRequest.getRequestURI()
                 )
         );
@@ -114,14 +108,11 @@ public class NotificationController {
     public ResponseEntity<ApiResponse> getUnreadNotifications() {
         String username = authHelper.getAuthenticatedUsername();
         User user = userService.getByUsername(username);
-        List<Notification> notifications = notificationService.getUnreadNotifications(user.getUserId());
-        List<NotificationResponseDto> response = notifications.stream()
-                .map(n -> modelMapper.map(n, NotificationResponseDto.class))
-                .collect(Collectors.toList());
+
         return ResponseEntity.ok(
                 ApiResponse.success(
                         "Unread notifications fetched successfully!",
-                        response,
+                        notificationService.getUnreadNotifications(user.getUserId()),
                         servletRequest.getRequestURI()
                 )
         );
@@ -133,12 +124,11 @@ public class NotificationController {
     )
     @GetMapping("/{id}")
     public ResponseEntity<ApiResponse> getNotificationById(@PathVariable Long id) {
-        Notification notification = notificationService.getNotificationById(id);
-        NotificationResponseDto dto = modelMapper.map(notification, NotificationResponseDto.class);
+
         return ResponseEntity.ok(
                 ApiResponse.success(
                         "Notification fetched successfully!",
-                        dto,
+                        notificationService.getNotificationById(id),
                         servletRequest.getRequestURI()
                 )
         );
@@ -157,6 +147,42 @@ public class NotificationController {
                 )
         );
     }
+
+    @Operation(
+            summary = "Change status of Notification by ID",
+            description = "Change the status of notification by its unique ID."
+    )
+    @PutMapping("/status/{id}")
+    public ResponseEntity<ApiResponse> changeStatusById(@PathVariable Long id, @RequestParam boolean read) {
+
+        return ResponseEntity.ok(
+                ApiResponse.success(
+                        "Notification marked as "+ (read ? "read" : "unread ")+  "successfully!",
+                        notificationService.changeStatusById(id, read),
+                        servletRequest.getRequestURI()
+                )
+        );
+    }
+
+
+    @Operation(
+            summary = "Testing the notification",
+            description = "This endpoint is use to test the realtime notification is working or not."
+    )
+    @PostMapping("/test-notification")
+    public void testNotification(Principal principal) {
+        String username = null;
+        if(principal != null){
+             username = principal.getName();
+        }
+        if(username != null){
+            String notification = "Hello " + username + " 🎉";
+            messagingTemplate.convertAndSendToUser(username, "/queue/notifications", Map.of("message",notification));
+        }
+        messagingTemplate.convertAndSend("/broadcast/notifications", Map.of("message","Hello everyone......."));
+
+    }
+
 
 //    @Operation(
 //        summary = "Update Notification",

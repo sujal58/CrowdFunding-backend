@@ -1,6 +1,7 @@
 package com.project.crowdfunding.interceptor;
 
 import com.project.crowdfunding.Services.AuthService.JwtService;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.server.ServerHttpRequest;
 import org.springframework.http.server.ServerHttpResponse;
 import org.springframework.http.server.ServletServerHttpRequest;
@@ -23,16 +24,20 @@ public class JwtHandshakeInterceptor implements HandshakeInterceptor {
                                    WebSocketHandler wsHandler,
                                    Map<String, Object> attributes) throws Exception {
         if (request instanceof ServletServerHttpRequest servletRequest) {
-            String authHeader = servletRequest.getServletRequest().getHeader("Authorization");
-            if (authHeader != null && authHeader.startsWith("Bearer ")) {
-                String jwt = authHeader.substring(7);
-                String username = jwtService.extractUsername(jwt); // implement this
+//            String authHeader = servletRequest.getServletRequest().getHeader("Authorization");
+
+            HttpServletRequest httpReq = servletRequest.getServletRequest();
+            String token = httpReq.getParameter("token");
+            System.out.println("handshake: "+ token);
+            if (token != null && !token.isBlank()) {
+                String username = jwtService.extractUsername(token);
                 if (username != null) {
                     attributes.put("username", username); // pass to principal
+                    return true;
                 }
             }
         }
-        return true;
+        return false;
     }
 
     @Override

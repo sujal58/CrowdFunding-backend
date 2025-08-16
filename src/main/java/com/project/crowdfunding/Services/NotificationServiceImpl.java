@@ -8,13 +8,17 @@ import com.project.crowdfunding.Services.Redis.RedisPublisher;
 import com.project.crowdfunding.dto.request.NotificationRequestDto;
 import com.project.crowdfunding.dto.response.NotificationResponseDto;
 import com.project.crowdfunding.utils.AuthHelper;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
+@Slf4j
 @RequiredArgsConstructor
 public class NotificationServiceImpl implements NotificationService {
 
@@ -29,12 +33,13 @@ public class NotificationServiceImpl implements NotificationService {
     private final RedisPublisher redisPublisher;
 
     @Override
-    public List<Notification> getAllNotifications() {
-        return notificationRepository.findAll();
+    public List<NotificationResponseDto> getAllNotifications() {
+        List<Notification> notification = notificationRepository.findAll();
+        return notification.stream().map(notification1 -> modelMapper.map(notification1, NotificationResponseDto.class)).collect(Collectors.toList());
     }
 
     @Override
-    public Notification sendNotification(NotificationRequestDto notificationDto) {
+    public NotificationResponseDto sendNotification(NotificationRequestDto notificationDto) {
         User user = userService.getByUsername(notificationDto.getUsername());
 
         if (user == null) {
@@ -57,9 +62,10 @@ public class NotificationServiceImpl implements NotificationService {
             redisPublisher.publish(webSocketNotification);
         } catch (Exception e) {
             System.err.println("Error publishing WebSocket notification: " + e.getMessage());
+            log.warn("Error publishing notification : {}", e.getMessage());
         }
 
-        return savedNotification;
+        return modelMapper.map(savedNotification, NotificationResponseDto.class);
     }
 
     @Override
@@ -85,23 +91,40 @@ public class NotificationServiceImpl implements NotificationService {
 
 
     @Override
-    public List<Notification> getNotificationsForUser(Long userId) {
-        return notificationRepository.findByUserUserId(userId);
+    public List<NotificationResponseDto> getNotificationsForUser(Long userId) {
+        List<Notification> notifications = notificationRepository.findByUserUserId(userId);
+        return notifications.stream().map(notification -> modelMapper.map(notification, NotificationResponseDto.class)).collect(Collectors.toList());
+
     }
 
     @Override
-    public List<Notification> getUnreadNotifications(Long userId) {
-        return notificationRepository.findByUserUserIdAndReadFalse(userId);
+    public List<NotificationResponseDto> getUnreadNotifications(Long userId) {
+        List<Notification> notifications = notificationRepository.findByUserUserIdAndReadFalse(userId);
+        return notifications.stream().map(notification -> modelMapper.map(notification, NotificationResponseDto.class)).collect(Collectors.toList());
+
     }
 
     @Override
-    public Notification getNotificationById(Long id) {
-        return notificationRepository.findById(id).orElseThrow(()-> new ResourceNotFoundException("Notification not found!"));
+    public NotificationResponseDto getNotificationById(Long id) {
+        Notification notifications = notificationRepository.findById(id).orElseThrow(()-> new ResourceNotFoundException("Notification not found!"));
+        return  modelMapper.map(notifications, NotificationResponseDto.class);
+
     }
 
     @Override
     public void deleteNotificationById(Long id) {
         Notification notification = notificationRepository.findById(id).orElseThrow(()-> new ResourceNotFoundException("Notification not found!"));
         notificationRepository.delete(notification);
+    }
+
+    @Transactional
+    @Override
+    public NotificationResponseDto changeStatusById(Long notificationId, boolean isRead) {
+        Notification notification = notificationRepository.findById(notificationId).orElseThrow(()-> new ResourceNotFoundException("Notification not found!"));
+        String admin = authHelper.getAuthenticatedUsername();
+
+        notification.setRead(isRead);
+        Notification savedNotification = notificationRepository.save(notification);
+        return modelMapper.map(savedNotification, NotificationResponseDto.class);
     }
 }
