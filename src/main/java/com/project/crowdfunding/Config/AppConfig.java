@@ -8,6 +8,7 @@ import com.project.crowdfunding.Repository.UserRepository;
 import com.project.crowdfunding.dto.response.CampaignResponseDto;
 import com.project.crowdfunding.dto.response.DonationResponseDto;
 import com.project.crowdfunding.dto.response.KycResponseDto;
+import com.project.crowdfunding.dto.response.NotificationResponseDto;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.boot.CommandLineRunner;
@@ -44,6 +45,10 @@ public class AppConfig {
 
         modelMapper.typeMap(Kyc.class, KycResponseDto.class).addMappings(mapper -> {
             mapper.map(src -> src.getUser().getKycStatus(), KycResponseDto::setStatus);
+        });
+
+        modelMapper.typeMap(Notification.class, NotificationResponseDto.class).addMappings(mapper -> {
+            mapper.map(src -> src.getUser().getUsername(), NotificationResponseDto::setUsername);
         });
 
         return modelMapper;

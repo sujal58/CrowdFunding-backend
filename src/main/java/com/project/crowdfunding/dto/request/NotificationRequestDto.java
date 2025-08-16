@@ -13,7 +13,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class NotificationRequestDto {
 
-//    @NotNull(message = "Username ID is required.")
+    @NotBlank(message = "Username is required.")
     private String username;
 
     @NotBlank(message = "Notification message cannot be empty.")

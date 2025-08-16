@@ -7,9 +7,8 @@ import org.springframework.messaging.simp.stomp.StompCommand;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.messaging.support.ChannelInterceptor;
 import org.springframework.messaging.support.MessageHeaderAccessor;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 
-import java.util.List;
+import java.security.Principal;
 
 public class JwtAuthChannelInterceptor implements ChannelInterceptor {
 
@@ -25,15 +24,16 @@ public class JwtAuthChannelInterceptor implements ChannelInterceptor {
                 MessageHeaderAccessor.getAccessor(message, StompHeaderAccessor.class);
 
         if (accessor != null && StompCommand.CONNECT.equals(accessor.getCommand())) {
-            String authHeader = accessor.getFirstNativeHeader("Authorization");
-            if (authHeader != null && authHeader.startsWith("Bearer ")) {
-                String token = authHeader.substring(7);
-                String username = jwtService.extractUsername(token);
-                if (username != null) {
-                    accessor.setUser(new UsernamePasswordAuthenticationToken(username, null, List.of()));
-                    System.out.println("connected user: "+username);
-                }
-            }
+//            String authHeader = accessor.getFirstNativeHeader("Authorization");
+            String username = (String)accessor.getSessionAttributes().get("username");
+          if(username != null){
+              accessor.setUser(new Principal() {
+                  @Override
+                  public String getName() {
+                      return username;
+                  }
+              });
+          }
         }
 
         return message;
